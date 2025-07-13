@@ -1,20 +1,25 @@
-"use client";
-import { Instagram, Twitter, Send, MessageCircle } from "lucide-react";
+'use client';
+import { Instagram, Twitter, Send, MessageCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Hero() {
   return (
     <section className="mt-24 bg-background px-6 pt-4 pb-2 text-foreground">
-      <div className="w-full max-w-3xl mx-auto text-center space-y-8">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="w-full max-w-3xl mx-auto text-center space-y-8"
+      >
         <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
           Compare the <span className="text-primary">Best Prop Firms</span>.
           <br />
-          Get the <span className="text-secondary-foreground">Best Offers</span>
-          .
+          Get the <span className="text-secondary-foreground">Best Offers</span>.
         </h1>
 
         <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-          Join thousands of traders using our platform to choose the right prop
-          firm and maximize their edge.
+          Join thousands of traders using our platform to choose the right prop firm and maximize
+          their edge.
         </p>
 
         <form className="flex flex-col sm:flex-row justify-center items-center gap-3 max-w-md mx-auto">
@@ -72,7 +77,7 @@ export default function Hero() {
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

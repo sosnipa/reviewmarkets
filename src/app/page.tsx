@@ -1,13 +1,25 @@
-import Hero from "@/components/Hero";
-import Navbar from "@/components/layout/Navbar";
+import Navbar from '@/components/layout/Navbar';
+import Hero from '@/components/Hero';
+import FirmsGridSection from '@/components/FirmsGridSection';
+import FeaturesSection from '@/components/FeaturesSection';
+import TestimonialsSection from '@/components/TestimonialsSection';
+import NewsletterSection from '@/components/NewsletterSection';
+import ContactSection from '@/components/ContactSection';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Navbar />
-      <main className="pt-4">
+      <main className="flex-1 flex flex-col gap-0 px-4 sm:px-6">
         <Hero />
+        <FeaturesSection />
+        <FirmsGridSection />
+        <TestimonialsSection />
+        <NewsletterSection />
+        <ContactSection />
       </main>
+      <Footer />
     </div>
   );
 }

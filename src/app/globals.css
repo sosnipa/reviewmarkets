@@ -39,7 +39,7 @@
   --brand-card: #ffffff;
   --brand-primary: #a21caf;
   --brand-secondary: #7c3aed;
-  --brand-accent: #f0abfc;
+  --brand-accent: #c084fc; /* Brighter, more visible purple */
   --brand-text: #171717;
   --brand-border: #e5e5e5;
 }
@@ -80,7 +80,7 @@
   --brand-card: #232046;
   --brand-primary: #a21caf;
   --brand-secondary: #7c3aed;
-  --brand-accent: #f0abfc;
+  --brand-accent: #c084fc; /* Brighter, more visible purple for dark mode */
   --brand-text: #fafafa;
   --brand-border: rgba(255, 255, 255, 0.1);
 }
@@ -93,7 +93,7 @@
     @apply outline-ring outline-2 outline-offset-2;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-brand-bg text-foreground;
     font-family:
       system-ui,
       -apple-system,
@@ -101,5 +101,9 @@
       'Segoe UI',
       Roboto,
       sans-serif;
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--brand-primary) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, var(--brand-secondary) 0%, transparent 70%),
+      var(--brand-bg);
   }
 }

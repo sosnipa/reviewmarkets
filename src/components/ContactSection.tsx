@@ -3,32 +3,32 @@ import { Mail, Phone, MapPin, Instagram, Twitter, Send, MessageCircle } from 'lu
 
 const ContactSection: React.FC = () => {
   return (
-    <section id="contact" className="w-full py-16 bg-background text-foreground">
+    <section id="contact" className="w-full py-16 bg-brand-bg text-brand-text">
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-start">
         {/* Contact Form */}
-        <form className="bg-white dark:bg-dark/80 rounded-lg shadow p-8 flex flex-col gap-4">
-          <h2 className="text-2xl font-bold mb-2">Contact Us</h2>
+        <form className="bg-brand-card rounded-2xl shadow-lg p-8 flex flex-col gap-4 border border-brand-border">
+          <h2 className="text-2xl font-bold mb-2 text-brand-primary">Contact Us</h2>
           <input
             type="text"
             placeholder="Your Name"
-            className="px-4 py-2 rounded border border-input bg-light dark:bg-dark/60 text-dark dark:text-light"
+            className="px-4 py-2 rounded-full border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
             required
           />
           <input
             type="email"
             placeholder="Your Email"
-            className="px-4 py-2 rounded border border-input bg-light dark:bg-dark/60 text-dark dark:text-light"
+            className="px-4 py-2 rounded-full border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
             required
           />
           <textarea
             placeholder="Your Message"
             rows={5}
-            className="px-4 py-2 rounded border border-input bg-light dark:bg-dark/60 text-dark dark:text-light"
+            className="px-4 py-2 rounded-2xl border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
             required
           />
           <button
             type="submit"
-            className="mt-2 px-6 py-2 bg-primary text-white rounded hover:bg-primary/80 transition font-semibold"
+            className="mt-2 px-6 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full font-semibold shadow hover:from-brand-primary hover:to-brand-secondary/80 transition focus:ring-2 focus:ring-brand-primary focus:outline-none"
           >
             Send Message
           </button>
@@ -36,15 +36,15 @@ const ContactSection: React.FC = () => {
         {/* Contact Info & Map */}
         <div className="flex flex-col gap-6">
           <div className="space-y-2">
-            <h3 className="font-bold text-lg mb-1">Contact Information</h3>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Mail className="h-5 w-5" /> support@reviewmarkets.com
+            <h3 className="font-bold text-lg mb-1 text-brand-primary">Contact Information</h3>
+            <div className="flex items-center gap-2 text-brand-text/70">
+              <Mail className="h-5 w-5 text-brand-accent" /> support@reviewmarkets.com
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Phone className="h-5 w-5" /> +1 (555) 123-4567
+            <div className="flex items-center gap-2 text-brand-text/70">
+              <Phone className="h-5 w-5 text-brand-accent" /> +1 (555) 123-4567
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <MapPin className="h-5 w-5" /> 123 Market St, New York, NY
+            <div className="flex items-center gap-2 text-brand-text/70">
+              <MapPin className="h-5 w-5 text-brand-accent" /> 123 Market St, New York, NY
             </div>
           </div>
           <div className="flex gap-4 mt-2">
@@ -53,36 +53,40 @@ const ContactSection: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
+              className="text-brand-text/80 hover:text-brand-accent transition"
             >
-              <Instagram className="h-6 w-6 hover:text-primary" />
+              <Instagram className="h-6 w-6" />
             </a>
             <a
               href="https://telegram.org"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Telegram"
+              className="text-brand-text/80 hover:text-brand-accent transition"
             >
-              <Send className="h-6 w-6 hover:text-primary" />
+              <Send className="h-6 w-6" />
             </a>
             <a
               href="https://twitter.com"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter"
+              className="text-brand-text/80 hover:text-brand-accent transition"
             >
-              <Twitter className="h-6 w-6 hover:text-primary" />
+              <Twitter className="h-6 w-6" />
             </a>
             <a
               href="https://whatsapp.com"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
+              className="text-brand-text/80 hover:text-brand-accent transition"
             >
-              <MessageCircle className="h-6 w-6 hover:text-primary" />
+              <MessageCircle className="h-6 w-6" />
             </a>
           </div>
           <div className="mt-6">
-            <div className="w-full h-40 rounded-lg bg-light dark:bg-dark/60 flex items-center justify-center text-muted-foreground text-sm">
+            <div className="w-full h-40 rounded-2xl bg-brand-bg flex items-center justify-center text-brand-text/50 text-sm border border-brand-border">
               [Map Placeholder]
             </div>
           </div>

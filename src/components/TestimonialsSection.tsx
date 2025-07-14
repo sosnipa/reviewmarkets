@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, easeOut } from 'framer-motion';
 
 const testimonials = [
   {
@@ -41,11 +41,13 @@ const variants = {
     x: 0,
     opacity: 1,
     position: 'relative' as const,
+    transition: { duration: 0.6, ease: easeOut },
   },
   exit: (direction: number) => ({
     x: direction < 0 ? 300 : -300,
     opacity: 0,
     position: 'absolute' as const,
+    transition: { duration: 0.6, ease: easeOut },
   }),
 };
 
@@ -64,8 +66,8 @@ const TestimonialsSection: React.FC = () => {
   };
 
   return (
-    <section id="testimonials" className="w-full py-16 bg-background text-center">
-      <h2 className="text-3xl font-bold mb-8">What Our Users Say</h2>
+    <section id="testimonials" className="w-full py-16 bg-brand-bg text-center">
+      <h2 className="text-3xl font-bold mb-8 text-brand-primary">What Our Users Say</h2>
       <div className="max-w-xl mx-auto relative">
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
@@ -90,29 +92,33 @@ const TestimonialsSection: React.FC = () => {
                 paginate(-1);
               }
             }}
-            className="bg-muted rounded-xl shadow-lg px-8 py-10 min-h-[260px] flex flex-col items-center"
+            className="bg-brand-card rounded-xl shadow-lg px-8 py-10 min-h-[260px] flex flex-col items-center border border-brand-border"
+            whileHover={{
+              scale: 1.01,
+              boxShadow: '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
+            }}
           >
             <img
               src={testimonials[testimonialIndex].avatar}
               alt={testimonials[testimonialIndex].name}
-              className="w-16 h-16 rounded-full mb-4 object-cover border-2 border-primary"
+              className="w-16 h-16 rounded-full mb-4 object-cover border-2 border-brand-primary"
             />
-            <p className="text-lg mb-4 font-medium">
+            <p className="text-lg mb-4 font-medium text-brand-text/90">
               &quot;{testimonials[testimonialIndex].review}&quot;
             </p>
-            <div className="font-semibold text-primary mb-1">
+            <div className="font-semibold text-brand-primary mb-1">
               {testimonials[testimonialIndex].name}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {testimonials[testimonialIndex].title}
-            </div>
+            <div className="text-sm text-brand-text/60">{testimonials[testimonialIndex].title}</div>
           </motion.div>
         </AnimatePresence>
         {/* Navigation Arrows */}
-        <button
+        <motion.button
           aria-label="Previous testimonial"
           onClick={() => paginate(-1)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-background border border-border rounded-full p-2 shadow hover:bg-muted transition"
+          whileHover={{ scale: 1.05, boxShadow: '0 0 4px 1px var(--brand-primary)' }}
+          whileTap={{ scale: 0.95 }}
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-brand-card border border-brand-border rounded-full p-2 shadow hover:bg-brand-primary/10 transition"
         >
           <svg
             width="24"
@@ -124,11 +130,13 @@ const TestimonialsSection: React.FC = () => {
           >
             <path d="M15 19l-7-7 7-7" />
           </svg>
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           aria-label="Next testimonial"
           onClick={() => paginate(1)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-background border border-border rounded-full p-2 shadow hover:bg-muted transition"
+          whileHover={{ scale: 1.05, boxShadow: '0 0 4px 1px var(--brand-primary)' }}
+          whileTap={{ scale: 0.95 }}
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-brand-card border border-brand-border rounded-full p-2 shadow hover:bg-brand-primary/10 transition"
         >
           <svg
             width="24"
@@ -140,14 +148,14 @@ const TestimonialsSection: React.FC = () => {
           >
             <path d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </motion.button>
         {/* Dots */}
         <div className="flex justify-center gap-2 mt-6">
           {testimonials.map((_, idx) => (
             <button
               key={idx}
               aria-label={`Go to testimonial ${idx + 1}`}
-              className={`w-3 h-3 rounded-full ${idx === testimonialIndex ? 'bg-primary' : 'bg-border'}`}
+              className={`w-3 h-3 rounded-full ${idx === testimonialIndex ? 'bg-brand-primary' : 'bg-brand-border'}`}
               onClick={() => setPage([idx, idx > testimonialIndex ? 1 : -1])}
             />
           ))}

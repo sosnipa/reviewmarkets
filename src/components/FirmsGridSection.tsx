@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion, easeOut } from 'framer-motion';
 
 const mockFirms = [
   {
@@ -45,6 +46,11 @@ const mockFirms = [
 const allCountries = Array.from(new Set(mockFirms.map((f) => f.country)));
 const allAssets = Array.from(new Set(mockFirms.flatMap((f) => f.assets)));
 
+const rowVariants = {
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } },
+};
+
 const FirmsGridSection: React.FC = () => {
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
@@ -58,9 +64,11 @@ const FirmsGridSection: React.FC = () => {
   });
 
   return (
-    <section id="firms" className="w-full py-12 bg-background">
+    <section id="firms" className="w-full py-12 bg-brand-bg">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold mb-6 text-center">Compare Prop Firms</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center text-brand-primary">
+          Compare Prop Firms
+        </h2>
         {/* Search and Filter Bar */}
         <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between px-2">
           <input
@@ -68,13 +76,13 @@ const FirmsGridSection: React.FC = () => {
             placeholder="Search by firm name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 rounded border border-input bg-light dark:bg-dark/60 text-dark dark:text-light w-full md:w-1/3"
+            className="px-4 py-2 rounded border border-brand-border bg-brand-card text-brand-text w-full md:w-1/3"
           />
           <select
             title="Filter by country"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="px-4 py-2 rounded border border-input bg-light dark:bg-dark/60 text-dark dark:text-light w-full md:w-1/4"
+            className="px-4 py-2 rounded border border-brand-border bg-brand-card text-brand-text w-full md:w-1/4"
           >
             <option value="">All Countries</option>
             {allCountries.map((c) => (
@@ -87,7 +95,7 @@ const FirmsGridSection: React.FC = () => {
             title="Filter by asset"
             value={asset}
             onChange={(e) => setAsset(e.target.value)}
-            className="px-4 py-2 rounded border border-input bg-light dark:bg-dark/60 text-dark dark:text-light w-full md:w-1/4"
+            className="px-4 py-2 rounded border border-brand-border bg-brand-card text-brand-text w-full md:w-1/4"
           >
             <option value="">All Assets</option>
             {allAssets.map((a) => (
@@ -97,10 +105,10 @@ const FirmsGridSection: React.FC = () => {
             ))}
           </select>
         </div>
-        <div className="overflow-x-auto rounded-lg shadow">
-          <table className="min-w-full bg-white dark:bg-dark/80">
+        <div className="overflow-x-auto rounded-lg shadow border border-brand-border bg-brand-card">
+          <table className="min-w-full">
             <thead>
-              <tr className="text-left text-xs uppercase text-muted-foreground bg-light dark:bg-dark/60">
+              <tr className="text-left text-xs uppercase text-brand-accent bg-brand-bg/80">
                 <th className="p-3">Firm</th>
                 <th className="p-3">Country</th>
                 <th className="p-3">Rating</th>
@@ -114,18 +122,27 @@ const FirmsGridSection: React.FC = () => {
             </thead>
             <tbody>
               {filteredFirms.map((firm) => (
-                <tr
+                <motion.tr
                   key={firm.name}
-                  className="border-b last:border-0 hover:bg-light/50 dark:hover:bg-dark/40 transition"
+                  variants={rowVariants}
+                  initial="initial"
+                  animate="animate"
+                  whileHover={{
+                    scale: 1.01,
+                    boxShadow: '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
+                    backgroundColor: 'var(--brand-bg)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+                  className="border-b last:border-0 hover:bg-brand-bg/80 transition"
                 >
                   <td className="p-3 flex items-center gap-2">
                     <img src={firm.logo} alt={firm.name} className="w-8 h-8 rounded-full" />
-                    <span className="font-semibold">{firm.name}</span>
+                    <span className="font-semibold text-brand-primary">{firm.name}</span>
                   </td>
                   <td className="p-3">{firm.country}</td>
                   <td className="p-3">
-                    <span className="font-bold text-primary">{firm.rating}</span>
-                    <span className="ml-1 text-xs text-muted-foreground">
+                    <span className="font-bold text-brand-primary">{firm.rating}</span>
+                    <span className="ml-1 text-xs text-brand-text/60">
                       ({firm.reviews} reviews)
                     </span>
                   </td>
@@ -135,7 +152,7 @@ const FirmsGridSection: React.FC = () => {
                       {firm.assets.map((asset) => (
                         <span
                           key={asset}
-                          className="px-2 py-0.5 bg-light dark:bg-dark/60 rounded text-xs"
+                          className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
                         >
                           {asset}
                         </span>
@@ -147,7 +164,7 @@ const FirmsGridSection: React.FC = () => {
                       {firm.platforms.map((platform) => (
                         <span
                           key={platform}
-                          className="px-2 py-0.5 bg-light dark:bg-dark/60 rounded text-xs"
+                          className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
                         >
                           {platform}
                         </span>
@@ -156,16 +173,24 @@ const FirmsGridSection: React.FC = () => {
                   </td>
                   <td className="p-3 font-semibold">{firm.maxAllocation}</td>
                   <td className="p-3">
-                    <span className="px-2 py-1 bg-primary text-white rounded text-xs font-bold">
+                    <span className="px-2 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded text-xs font-bold shadow">
                       {firm.promo}
                     </span>
                   </td>
                   <td className="p-3">
-                    <button className="px-4 py-1 bg-secondary text-dark rounded hover:bg-secondary/80 transition text-xs font-semibold">
+                    <motion.button
+                      whileHover={{
+                        scale: 1.04,
+                        boxShadow:
+                          '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
+                      }}
+                      whileTap={{ scale: 0.97 }}
+                      className="px-4 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full hover:from-brand-primary hover:to-brand-secondary/80 transition text-xs font-semibold shadow"
+                    >
                       View
-                    </button>
+                    </motion.button>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>

@@ -5,15 +5,7 @@ const navColumns = [
     title: 'PROP FIRMS',
     links: [
       { label: 'All Prop Firms', href: '#' },
-      { label: 'Compare Challenges', href: '#' },
       { label: 'Best Sellers', href: '#' },
-      { label: 'Favorite Firms', href: '#' },
-      { label: 'Announcements', href: '#' },
-      { label: 'Prop Firm Rules', href: '#' },
-      { label: 'Reviews', href: '#' },
-      { label: 'Payouts', href: '#' },
-      { label: 'Demo Accounts', href: '#' },
-      { label: 'Unlisted Firms', href: '#' },
     ],
   },
   {
@@ -36,14 +28,6 @@ const navColumns = [
     links: [
       { label: 'Contact Us', href: '#' },
       { label: 'How it Works', href: '#' },
-    ],
-  },
-  {
-    title: 'RESOURCES',
-    links: [
-      { label: 'High Impact News', href: '#' },
-      { label: 'Blog', href: '#' },
-      { label: 'Prop Firm Features', href: '#' },
     ],
   },
   {

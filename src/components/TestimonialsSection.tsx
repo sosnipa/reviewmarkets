@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion, AnimatePresence, easeOut } from 'framer-motion';
+import Image from 'next/image';
 
 const testimonials = [
   {
@@ -98,9 +99,11 @@ const TestimonialsSection: React.FC = () => {
               boxShadow: '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
             }}
           >
-            <img
+            <Image
               src={testimonials[testimonialIndex].avatar}
               alt={testimonials[testimonialIndex].name}
+              width={64}
+              height={64}
               className="w-16 h-16 rounded-full mb-4 object-cover border-2 border-brand-primary"
             />
             <p className="text-lg mb-4 font-medium text-brand-text/90">

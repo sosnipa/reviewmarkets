@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useInView, easeOut } from 'framer-motion';
 
 const features = [
@@ -46,15 +46,15 @@ const FeaturesSection: React.FC = () => {
   const [index, setIndex] = useState(0);
   const maxIndex = features.length - 2;
 
-  const next = () => setIndex((i) => (i < maxIndex ? i + 2 : 0));
-  const prev = () => setIndex((i) => (i === 0 ? maxIndex : i - 2));
+  const next = useCallback(() => setIndex((i) => (i < maxIndex ? i + 2 : 0)), [maxIndex]);
+  const prev = useCallback(() => setIndex((i) => (i === 0 ? maxIndex : i - 2)), [maxIndex]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       next();
     }, 12000);
     return () => clearInterval(interval);
-  }, [index]);
+  }, [index, next]);
 
   // Ref for in-view animation
   const sectionRef = React.useRef<HTMLDivElement>(null);

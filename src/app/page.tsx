@@ -2,6 +2,7 @@ import Navbar from '@/components/layout/Navbar';
 import Hero from '@/components/Hero';
 import FirmsGridSection from '@/components/FirmsGridSection';
 import FeaturesSection from '@/components/FeaturesSection';
+import MarketDataSection from '@/components/MarketDataSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import ContactSection from '@/components/ContactSection';
@@ -15,6 +16,7 @@ export default function Home() {
         <Hero />
         <FeaturesSection />
         <FirmsGridSection />
+        <MarketDataSection />
         <TestimonialsSection />
         <NewsletterSection />
         <ContactSection />

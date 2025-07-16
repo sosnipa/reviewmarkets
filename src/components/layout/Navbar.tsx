@@ -85,6 +85,12 @@ export default function Navbar() {
                 Contact
               </a>
               <a
+                href="/admin"
+                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium"
+              >
+                Admin
+              </a>
+              <a
                 href="#get-started"
                 className="ml-4 px-5 py-2 rounded-full bg-brand-primary text-white font-semibold shadow hover:bg-brand-accent transition-colors dark:bg-brand-accent dark:hover:bg-brand-primary dark:text-brand-bg"
               >
@@ -146,6 +152,13 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
           >
             Contact
+          </a>
+          <a
+            href="/admin"
+            className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent font-medium"
+            onClick={() => setMenuOpen(false)}
+          >
+            Admin
           </a>
           <a
             href="#get-started"

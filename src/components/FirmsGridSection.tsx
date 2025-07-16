@@ -1,50 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, easeOut } from 'framer-motion';
 
-const mockFirms = [
-  {
-    name: 'Alpha Capital',
-    logo: '/Logo.png',
-    country: 'GB',
-    rating: 4.4,
-    reviews: 893,
-    years: 3,
-    assets: ['FX', 'Indices', 'Metals', 'Other Commodities'],
-    platforms: ['MT4', 'MT5'],
-    maxAllocation: '$400K',
-    promo: '15% OFF',
-  },
-  {
-    name: 'The5ers',
-    logo: '/Logo.png',
-    country: 'IL',
-    rating: 4.8,
-    reviews: 986,
-    years: 9,
-    assets: ['Crypto', 'Energy', 'FX', 'Other Commodities'],
-    platforms: ['MT4', 'cTrader'],
-    maxAllocation: '$615K',
-    promo: '5% OFF',
-  },
-  {
-    name: 'E8 Markets',
-    logo: '/Logo.png',
-    country: 'US',
-    rating: 4.7,
-    reviews: 134,
-    years: 2,
-    assets: ['FX', 'Indices', 'Metals'],
-    platforms: ['MT5'],
-    maxAllocation: '$900K',
-    promo: '5% OFF',
-  },
-  // ...add more mock firms as needed
-];
+interface Firm {
+  id: number;
+  name: string;
+  logo: string;
+  country: string;
+  rating: number;
+  reviews: number;
+  years: number;
+  assets: string[];
+  platforms: string[];
+  maxAllocation: string;
+  promo: string;
+  description?: string;
+  website?: string;
+}
 
-const allCountries = Array.from(new Set(mockFirms.map((f) => f.country)));
-const allAssets = Array.from(new Set(mockFirms.flatMap((f) => f.assets)));
+interface FirmsResponse {
+  firms: Firm[];
+  total: number;
+  filters: {
+    search?: string;
+    country?: string;
+    asset?: string;
+  };
+}
 
 const rowVariants = {
   initial: { opacity: 0, y: 24 },
@@ -55,13 +38,46 @@ const FirmsGridSection: React.FC = () => {
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
   const [asset, setAsset] = useState('');
+  const [firms, setFirms] = useState<Firm[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [allCountries, setAllCountries] = useState<string[]>([]);
+  const [allAssets, setAllAssets] = useState<string[]>([]);
 
-  const filteredFirms = mockFirms.filter((firm) => {
-    const matchesName = firm.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCountry = country ? firm.country === country : true;
-    const matchesAsset = asset ? firm.assets.includes(asset) : true;
-    return matchesName && matchesCountry && matchesAsset;
-  });
+  // Fetch firms data
+  useEffect(() => {
+    const fetchFirms = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (country) params.append('country', country);
+        if (asset) params.append('asset', asset);
+
+        const response = await fetch(`/api/firms?${params}`);
+        if (!response.ok) throw new Error('Failed to fetch firms');
+
+        const data: FirmsResponse = await response.json();
+        setFirms(data.firms);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load firms data');
+        console.error('Error fetching firms:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFirms();
+  }, [search, country, asset]);
+
+  // Extract unique countries and assets from firms data
+  useEffect(() => {
+    const countries = Array.from(new Set(firms.map((f) => f.country)));
+    const assets = Array.from(new Set(firms.flatMap((f) => f.assets)));
+    setAllCountries(countries);
+    setAllAssets(assets);
+  }, [firms]);
 
   return (
     <section id="firms" className="w-full py-12 bg-brand-bg">
@@ -105,96 +121,105 @@ const FirmsGridSection: React.FC = () => {
             ))}
           </select>
         </div>
-        <div className="overflow-x-auto rounded-lg shadow border border-brand-border bg-brand-card">
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-left text-xs uppercase text-brand-accent bg-brand-bg/80">
-                <th className="p-3">Firm</th>
-                <th className="p-3">Country</th>
-                <th className="p-3">Rating</th>
-                <th className="p-3">Years</th>
-                <th className="p-3">Assets</th>
-                <th className="p-3">Platforms</th>
-                <th className="p-3">Max Allocation</th>
-                <th className="p-3">Promo</th>
-                <th className="p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredFirms.map((firm) => (
-                <motion.tr
-                  key={firm.name}
-                  variants={rowVariants}
-                  initial="initial"
-                  animate="animate"
-                  whileHover={{
-                    scale: 1.01,
-                    boxShadow: '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
-                    backgroundColor: 'var(--brand-bg)',
-                  }}
-                  transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-                  className="border-b last:border-0 hover:bg-brand-bg/80 transition"
-                >
-                  <td className="p-3 flex items-center gap-2">
-                    <img src={firm.logo} alt={firm.name} className="w-8 h-8 rounded-full" />
-                    <span className="font-semibold text-brand-primary">{firm.name}</span>
-                  </td>
-                  <td className="p-3">{firm.country}</td>
-                  <td className="p-3">
-                    <span className="font-bold text-brand-primary">{firm.rating}</span>
-                    <span className="ml-1 text-xs text-brand-text/60">
-                      ({firm.reviews} reviews)
-                    </span>
-                  </td>
-                  <td className="p-3">{firm.years}</td>
-                  <td className="p-3">
-                    <div className="flex flex-wrap gap-1">
-                      {firm.assets.map((asset) => (
-                        <span
-                          key={asset}
-                          className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
-                        >
-                          {asset}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex gap-1">
-                      {firm.platforms.map((platform) => (
-                        <span
-                          key={platform}
-                          className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
-                        >
-                          {platform}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="p-3 font-semibold">{firm.maxAllocation}</td>
-                  <td className="p-3">
-                    <span className="px-2 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded text-xs font-bold shadow">
-                      {firm.promo}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <motion.button
-                      whileHover={{
-                        scale: 1.04,
-                        boxShadow:
-                          '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
-                      }}
-                      whileTap={{ scale: 0.97 }}
-                      className="px-4 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full hover:from-brand-primary hover:to-brand-secondary/80 transition text-xs font-semibold shadow"
-                    >
-                      View
-                    </motion.button>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-500">{error}</div>
+        ) : (
+          <div className="overflow-x-auto rounded-lg shadow border border-brand-border bg-brand-card">
+            <table className="min-w-full">
+              <thead>
+                <tr className="text-left text-xs uppercase text-brand-accent bg-brand-bg/80">
+                  <th className="p-3">Firm</th>
+                  <th className="p-3">Country</th>
+                  <th className="p-3">Rating</th>
+                  <th className="p-3">Years</th>
+                  <th className="p-3">Assets</th>
+                  <th className="p-3">Platforms</th>
+                  <th className="p-3">Max Allocation</th>
+                  <th className="p-3">Promo</th>
+                  <th className="p-3">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {firms.map((firm: Firm) => (
+                  <motion.tr
+                    key={firm.name}
+                    variants={rowVariants}
+                    initial="initial"
+                    animate="animate"
+                    whileHover={{
+                      scale: 1.01,
+                      boxShadow:
+                        '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
+                      backgroundColor: 'var(--brand-bg)',
+                    }}
+                    transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+                    className="border-b last:border-0 hover:bg-brand-bg/80 transition"
+                  >
+                    <td className="p-3 flex items-center gap-2">
+                      <img src={firm.logo} alt={firm.name} className="w-8 h-8 rounded-full" />
+                      <span className="font-semibold text-brand-primary">{firm.name}</span>
+                    </td>
+                    <td className="p-3">{firm.country}</td>
+                    <td className="p-3">
+                      <span className="font-bold text-brand-primary">{firm.rating}</span>
+                      <span className="ml-1 text-xs text-brand-text/60">
+                        ({firm.reviews} reviews)
+                      </span>
+                    </td>
+                    <td className="p-3">{firm.years}</td>
+                    <td className="p-3">
+                      <div className="flex flex-wrap gap-1">
+                        {firm.assets.map((asset: string) => (
+                          <span
+                            key={asset}
+                            className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
+                          >
+                            {asset}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex gap-1">
+                        {firm.platforms.map((platform: string) => (
+                          <span
+                            key={platform}
+                            className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
+                          >
+                            {platform}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="p-3 font-semibold">{firm.maxAllocation}</td>
+                    <td className="p-3">
+                      <span className="px-2 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded text-xs font-bold shadow">
+                        {firm.promo}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <motion.button
+                        whileHover={{
+                          scale: 1.04,
+                          boxShadow:
+                            '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
+                        }}
+                        whileTap={{ scale: 0.97 }}
+                        className="px-4 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full hover:from-brand-primary hover:to-brand-secondary/80 transition text-xs font-semibold shadow"
+                      >
+                        View
+                      </motion.button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   );

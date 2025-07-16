@@ -1,36 +1,22 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, easeOut } from 'framer-motion';
-import Image from 'next/image';
 
-const testimonials = [
-  {
-    name: 'Alice Johnson',
-    title: 'Day Trader',
-    review:
-      'This platform made it so easy to compare prop firms. I found the perfect fit for my trading style!',
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-  },
-  {
-    name: 'Brian Lee',
-    title: 'Forex Trader',
-    review: 'The reviews and filters are top-notch. I saved hours of research. Highly recommended!',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-  },
-  {
-    name: 'Carla Mendes',
-    title: 'Futures Trader',
-    review:
-      'I love the clean design and the detailed firm breakdowns. Helped me avoid some bad choices!',
-    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
-  },
-  {
-    name: 'David Kim',
-    title: 'Swing Trader',
-    review: 'The testimonials and user feedback gave me confidence in my decision. Great resource!',
-    avatar: 'https://randomuser.me/api/portraits/men/65.jpg',
-  },
-];
+interface Testimonial {
+  id: number;
+  name: string;
+  title: string;
+  review: string;
+  avatar: string;
+  rating: number;
+  approved: boolean;
+  createdAt: string;
+}
+
+interface TestimonialsResponse {
+  testimonials: Testimonial[];
+  total: number;
+}
 
 const variants = {
   enter: (direction: number) => ({
@@ -58,13 +44,59 @@ const swipePower = (offset: number, velocity: number) => {
 };
 
 const TestimonialsSection: React.FC = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [[page, direction], setPage] = useState<[number, number]>([0, 0]);
+
+  // Fetch testimonials
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/testimonials');
+        if (!response.ok) throw new Error('Failed to fetch testimonials');
+
+        const data: TestimonialsResponse = await response.json();
+        setTestimonials(data.testimonials);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load testimonials');
+        console.error('Error fetching testimonials:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
   const testimonialIndex =
     ((page % testimonials.length) + testimonials.length) % testimonials.length;
 
   const paginate = (newDirection: number) => {
     setPage([page + newDirection, newDirection]);
   };
+
+  if (loading) {
+    return (
+      <section id="testimonials" className="w-full py-16 bg-brand-bg text-center">
+        <h2 className="text-3xl font-bold mb-8 text-brand-primary">What Our Users Say</h2>
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || testimonials.length === 0) {
+    return (
+      <section id="testimonials" className="w-full py-16 bg-brand-bg text-center">
+        <h2 className="text-3xl font-bold mb-8 text-brand-primary">What Our Users Say</h2>
+        <div className="text-center py-12 text-red-500">{error || 'No testimonials available'}</div>
+      </section>
+    );
+  }
 
   return (
     <section id="testimonials" className="w-full py-16 bg-brand-bg text-center">
@@ -99,11 +131,9 @@ const TestimonialsSection: React.FC = () => {
               boxShadow: '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
             }}
           >
-            <Image
+            <img
               src={testimonials[testimonialIndex].avatar}
               alt={testimonials[testimonialIndex].name}
-              width={64}
-              height={64}
               className="w-16 h-16 rounded-full mb-4 object-cover border-2 border-brand-primary"
             />
             <p className="text-lg mb-4 font-medium text-brand-text/90">

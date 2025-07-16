@@ -1,36 +1,102 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Instagram, Twitter, Send, MessageCircle } from 'lucide-react';
 
 const ContactSection: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setStatus('success');
+        setMessage(data.message);
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setStatus('error');
+        setMessage(data.message);
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Something went wrong. Please try again.');
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
   return (
     <section id="contact" className="w-full py-16 bg-brand-bg text-brand-text">
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-start">
         {/* Contact Form */}
-        <form className="bg-brand-card rounded-2xl shadow-lg p-8 flex flex-col gap-4 border border-brand-border">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-brand-card rounded-2xl shadow-lg p-8 flex flex-col gap-4 border border-brand-border"
+        >
           <h2 className="text-2xl font-bold mb-2 text-brand-primary">Contact Us</h2>
           <input
             type="text"
+            name="name"
             placeholder="Your Name"
+            value={formData.name}
+            onChange={handleChange}
             className="px-4 py-2 rounded-full border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
             required
+            disabled={status === 'loading'}
           />
           <input
             type="email"
+            name="email"
             placeholder="Your Email"
+            value={formData.email}
+            onChange={handleChange}
             className="px-4 py-2 rounded-full border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
             required
+            disabled={status === 'loading'}
           />
           <textarea
+            name="message"
             placeholder="Your Message"
             rows={5}
+            value={formData.message}
+            onChange={handleChange}
             className="px-4 py-2 rounded-2xl border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
             required
+            disabled={status === 'loading'}
           />
+          {message && (
+            <div className={`text-sm ${status === 'success' ? 'text-green-500' : 'text-red-500'}`}>
+              {message}
+            </div>
+          )}
           <button
             type="submit"
-            className="mt-2 px-6 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full font-semibold shadow hover:from-brand-primary hover:to-brand-secondary/80 transition focus:ring-2 focus:ring-brand-primary focus:outline-none"
+            disabled={status === 'loading'}
+            className="mt-2 px-6 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full font-semibold shadow hover:from-brand-primary hover:to-brand-secondary/80 transition focus:ring-2 focus:ring-brand-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Send Message
+            {status === 'loading' ? 'Sending...' : 'Send Message'}
           </button>
         </form>
         {/* Contact Info & Map */}

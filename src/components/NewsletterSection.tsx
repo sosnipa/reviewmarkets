@@ -2,16 +2,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const mockSubscribe = (email: string) =>
-  new Promise<{ success: boolean; message: string }>((resolve) => {
-    setTimeout(() => {
-      if (email.includes('@')) {
-        resolve({ success: true, message: "You're subscribed!" });
-      } else {
-        resolve({ success: false, message: 'Please enter a valid email.' });
-      }
-    }, 1200);
-  });
+const subscribeToNewsletter = async (email: string) => {
+  try {
+    const response = await fetch('/api/newsletter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch {
+    return { success: false, message: 'Something went wrong. Please try again.' };
+  }
+};
 
 const NewsletterSection: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -35,7 +41,7 @@ const NewsletterSection: React.FC = () => {
     e.preventDefault();
     setStatus('loading');
     setMessage('');
-    const res = await mockSubscribe(email);
+    const res = await subscribeToNewsletter(email);
     if (res.success) {
       setStatus('success');
       setMessage(res.message);

@@ -1,29 +1,20 @@
 import { NextResponse } from 'next/server';
-
-// This will eventually come from a database
-const contactMessages: Array<{
-  id: number;
-  name: string;
-  email: string;
-  message: string;
-  createdAt: string;
-  status: 'new' | 'read' | 'replied';
-}> = [];
+import { prisma } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, message } = body;
+    const { name, email, subject, message } = body;
 
     // Validate required fields
     if (!name || !email || !message) {
       return NextResponse.json(
-        { success: false, message: 'Name, email, and message are required.' },
+        { success: false, message: 'Please fill in all required fields.' },
         { status: 400 }
       );
     }
 
-    // Validate email format
+    // Validate email
     if (!email.includes('@')) {
       return NextResponse.json(
         { success: false, message: 'Please enter a valid email address.' },
@@ -31,34 +22,27 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create new contact message
-    const newMessage = {
-      id: contactMessages.length + 1,
-      name,
-      email,
-      message,
-      createdAt: new Date().toISOString(),
-      status: 'new' as const,
-    };
+    // Save message to database
+    await prisma.contactMessage.create({
+      data: {
+        name,
+        email,
+        subject: subject || 'General Inquiry',
+        message,
+      },
+    });
 
-    // Add to messages list
-    contactMessages.push(newMessage);
-
-    // In a real app, you would:
-    // 1. Save to database
-    // 2. Send notification email to admin
-    // 3. Send confirmation email to user
-    // 4. Integrate with CRM system
-
-    // Simulate some processing time
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    // In a real app, you would also:
+    // 1. Send email notification to admin
+    // 2. Send confirmation email to user
+    // 3. Integrate with CRM system
 
     return NextResponse.json({
       success: true,
       message: 'Thank you for your message! We will get back to you soon.',
-      messageId: newMessage.id,
     });
-  } catch {
+  } catch (error) {
+    console.error('Contact form error:', error);
     return NextResponse.json(
       { success: false, message: 'Something went wrong. Please try again.' },
       { status: 500 }
@@ -67,10 +51,30 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  // In a real app, this would require admin authentication
-  return NextResponse.json({
-    messages: contactMessages,
-    total: contactMessages.length,
-    unread: contactMessages.filter((m) => m.status === 'new').length,
-  });
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        subject: true,
+        message: true,
+        createdAt: true,
+        isRead: true,
+      },
+    });
+
+    return NextResponse.json({
+      messages,
+      total: messages.length,
+      success: true,
+    });
+  } catch (error) {
+    console.error('Error fetching contact messages:', error);
+    return NextResponse.json(
+      { success: false, message: 'Error fetching contact messages.' },
+      { status: 500 }
+    );
+  }
 }

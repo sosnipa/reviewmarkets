@@ -41,6 +41,15 @@ export class ScrapingService {
    */
   async scrapeWebsite(url: string, options: Record<string, unknown> = {}): Promise<ScrapingResult> {
     try {
+      // Check if API key is available
+      if (!this.apiKey || this.apiKey === 'your_scrapingbee_api_key_here') {
+        console.log('ScrapingBee API key not configured, skipping API call');
+        return {
+          success: false,
+          error: 'API key not configured',
+        };
+      }
+
       const response = await axios.get('https://app.scrapingbee.com/api/v1/', {
         params: {
           api_key: this.apiKey,

@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Users table for authentication and user management
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  newsletterSubscriptions NewsletterSubscription[]
+  contactMessages        ContactMessage[]
+  reviews                Review[]
+  favorites              UserFavorite[]
+
+  @@map("users")
+}
+
+// Newsletter subscribers
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  userId    String?  // Optional link to user account
+  subscribedAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+  source    String?  // Where they subscribed from (landing page, popup, etc.)
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("newsletter_subscriptions")
+}
+
+// Contact form messages
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
+  isRead    Boolean  @default(false)
+  userId    String?  // Optional link to user account
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("contact_messages")
+}
+
+// Prop firms data
+model PropFirm {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  logo            String?
+  country         String
+  rating          Float
+  reviews         Int      @default(0)
+  years           Int
+  assets          String // JSON string of supported assets
+  platforms       String // JSON string of supported platforms
+  maxAllocation   String
+  promo           String?
+  description     String?
+  website         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  reviewsData     Review[]
+  favorites       UserFavorite[]
+
+  @@map("prop_firms")
+}
+
+// User reviews for prop firms
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  firmId    String
+  rating    Int
+  title     String?
+  text      String
+  createdAt DateTime @default(now())
+  isApproved Boolean @default(false)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firm PropFirm @relation(fields: [firmId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, firmId]) // One review per user per firm
+  @@map("reviews")
+}
+
+// User favorites for prop firms
+model UserFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  firmId    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firm PropFirm @relation(fields: [firmId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, firmId]) // One favorite per user per firm
+  @@map("user_favorites")
+}
+
+// Market data cache
+model MarketData {
+  id        String   @id @default(cuid())
+  symbol    String
+  price     Float?
+  change    Float?
+  percentChange Float?
+  type      String   // forex, crypto, indices
+  timestamp DateTime @default(now())
+
+  @@unique([symbol, type])
+  @@map("market_data")
+}

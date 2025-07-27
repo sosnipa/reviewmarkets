@@ -168,12 +168,11 @@ export class DataAggregatorService {
       // Fetch additional data from APIs
       const firmNames = baseFirms.map((firm) => firm.name);
 
-      const [trustpilotData, scrapedData, marketData] = await Promise.all([
+      const [trustpilotData, scrapedData] = await Promise.all([
         TrustpilotService.getMultiplePropFirmReviews(firmNames),
         ScrapingService.scrapeMultiplePropFirms(
           baseFirms.map((firm) => ({ name: firm.name, website: firm.website }))
         ),
-        // Removed TradingViewService.getMarketOverview()
       ]);
 
       // Combine all data
@@ -211,7 +210,7 @@ export class DataAggregatorService {
 
           marketData: {
             supportedMarkets: scraped?.supportedMarkets || firm.assets,
-            currentTrends: this.getCurrentTrends(marketData),
+            currentTrends: this.getCurrentTrends(),
           },
 
           lastUpdated: new Date().toISOString(),
@@ -251,25 +250,30 @@ export class DataAggregatorService {
   /**
    * Get current trends for specific assets
    */
-  private getCurrentTrends(marketData: {
+  private getCurrentTrends(marketData?: {
     forex: Array<{ change_percent: number }>;
     crypto: Array<{ change_percent: number }>;
     indices: Array<{ change_percent: number }>;
   }): string[] {
     const trends: string[] = [];
 
+    // Check if marketData exists before analyzing
+    if (!marketData) {
+      return trends;
+    }
+
     // Analyze market data to determine trends
-    if (marketData.forex.length > 0) {
+    if (marketData.forex && marketData.forex.length > 0) {
       const forexTrend = marketData.forex[0].change_percent > 0 ? 'Bullish' : 'Bearish';
       trends.push(`Forex: ${forexTrend}`);
     }
 
-    if (marketData.crypto.length > 0) {
+    if (marketData.crypto && marketData.crypto.length > 0) {
       const cryptoTrend = marketData.crypto[0].change_percent > 0 ? 'Bullish' : 'Bearish';
       trends.push(`Crypto: ${cryptoTrend}`);
     }
 
-    if (marketData.indices.length > 0) {
+    if (marketData.indices && marketData.indices.length > 0) {
       const indicesTrend = marketData.indices[0].change_percent > 0 ? 'Bullish' : 'Bearish';
       trends.push(`Indices: ${indicesTrend}`);
     }

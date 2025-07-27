@@ -60,6 +60,12 @@ export class TrustpilotService {
    */
   async searchBusinesses(query: string): Promise<TrustpilotBusiness[]> {
     try {
+      // Check if API key is available
+      if (!this.apiKey || this.apiKey === 'your_trustpilot_api_key_here') {
+        console.log('Trustpilot API key not configured, skipping API call');
+        return [];
+      }
+
       const response = await axios.get(`https://api.trustpilot.com/v1/business-units/find`, {
         params: {
           name: query,

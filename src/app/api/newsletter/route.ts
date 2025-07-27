@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-
-// This will eventually come from a database
-const subscribers: string[] = [];
+import { prisma } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
@@ -17,30 +15,45 @@ export async function POST(request: Request) {
     }
 
     // Check if already subscribed
-    if (subscribers.includes(email)) {
-      return NextResponse.json(
-        { success: false, message: 'You are already subscribed to our newsletter!' },
-        { status: 400 }
-      );
+    const existingSubscription = await prisma.newsletterSubscription.findUnique({
+      where: { email },
+    });
+
+    if (existingSubscription) {
+      if (existingSubscription.isActive) {
+        return NextResponse.json(
+          { success: false, message: 'You are already subscribed to our newsletter!' },
+          { status: 400 }
+        );
+      } else {
+        // Reactivate subscription
+        await prisma.newsletterSubscription.update({
+          where: { email },
+          data: { isActive: true },
+        });
+      }
+    } else {
+      // Create new subscription
+      await prisma.newsletterSubscription.create({
+        data: {
+          email,
+          source: 'landing_page',
+        },
+      });
     }
 
-    // Add to subscribers list
-    subscribers.push(email);
-
-    // In a real app, you would:
-    // 1. Save to database
-    // 2. Send welcome email
-    // 3. Add to email service (Mailchimp, SendGrid, etc.)
-
-    // Simulate some processing time
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Get total active subscribers
+    const totalSubscribers = await prisma.newsletterSubscription.count({
+      where: { isActive: true },
+    });
 
     return NextResponse.json({
       success: true,
       message: "You're subscribed! Welcome to our newsletter.",
-      totalSubscribers: subscribers.length,
+      totalSubscribers,
     });
-  } catch {
+  } catch (error) {
+    console.error('Newsletter subscription error:', error);
     return NextResponse.json(
       { success: false, message: 'Something went wrong. Please try again.' },
       { status: 500 }
@@ -49,9 +62,20 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  // In a real app, this would require admin authentication
-  return NextResponse.json({
-    subscribers: subscribers.length,
-    // Don't return actual emails for privacy
-  });
+  try {
+    const totalSubscribers = await prisma.newsletterSubscription.count({
+      where: { isActive: true },
+    });
+
+    return NextResponse.json({
+      subscribers: totalSubscribers,
+      success: true,
+    });
+  } catch (error) {
+    console.error('Error fetching newsletter stats:', error);
+    return NextResponse.json(
+      { success: false, message: 'Error fetching newsletter statistics.' },
+      { status: 500 }
+    );
+  }
 }

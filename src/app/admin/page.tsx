@@ -268,14 +268,20 @@ const AdminPanel: React.FC = () => {
               <div className="bg-brand-bg/50 rounded-lg p-4">
                 <h3 className="font-semibold text-brand-primary mb-2">Newsletter Management</h3>
                 <p className="text-sm text-brand-text/70 mb-4">
-                  In a full implementation, you would be able to:
+                  Advanced newsletter management features are now available:
                 </p>
-                <ul className="text-sm text-brand-text/70 space-y-1">
+                <ul className="text-sm text-brand-text/70 space-y-1 mb-4">
                   <li>• View individual subscriber emails</li>
-                  <li>• Send newsletters to subscribers</li>
-                  <li>• Export subscriber list</li>
-                  <li>• Manage subscriber preferences</li>
+                  <li>• Send bulk emails to subscribers</li>
+                  <li>• Manage subscriber status (active/inactive)</li>
+                  <li>• Track email campaigns</li>
                 </ul>
+                <a
+                  href="/admin/newsletter"
+                  className="inline-block bg-brand-primary text-white px-6 py-2 rounded-lg hover:bg-brand-accent transition-colors"
+                >
+                  Go to Newsletter Management
+                </a>
               </div>
             </div>
           )}

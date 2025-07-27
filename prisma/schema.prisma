@@ -131,3 +131,16 @@ model MarketData {
   @@unique([symbol, type])
   @@map("market_data")
 }
+
+// Email campaigns for tracking bulk emails
+model EmailCampaign {
+  id        String   @id @default(cuid())
+  subject   String
+  content   String
+  type      String   // custom, promotional, newsletter
+  sentTo    Int
+  status    String   // sent, failed, pending
+  createdAt DateTime @default(now())
+
+  @@map("email_campaigns")
+}

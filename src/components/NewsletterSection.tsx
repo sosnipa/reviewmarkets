@@ -2,14 +2,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const subscribeToNewsletter = async (email: string) => {
+const subscribeToNewsletter = async (email: string, name?: string) => {
   try {
     const response = await fetch('/api/newsletter', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, name }),
     });
 
     const data = await response.json();
@@ -21,6 +21,7 @@ const subscribeToNewsletter = async (email: string) => {
 
 const NewsletterSection: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -41,7 +42,7 @@ const NewsletterSection: React.FC = () => {
     e.preventDefault();
     setStatus('loading');
     setMessage('');
-    const res = await subscribeToNewsletter(email);
+    const res = await subscribeToNewsletter(email, name);
     if (res.success) {
       setStatus('success');
       setMessage(res.message);
@@ -75,37 +76,46 @@ const NewsletterSection: React.FC = () => {
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text mb-6 text-center leading-tight">
           Subscribe For The Latest In Prop Trading News And Deals
         </h2>
-        <form
-          className="flex w-full max-w-md mx-auto gap-2 bg-brand-card/80 rounded-full p-1 border border-brand-border"
-          onSubmit={handleSubmit}
-        >
-          <input
-            type="email"
-            placeholder="Your email"
-            className="flex-1 px-5 py-3 bg-transparent text-brand-text placeholder:text-brand-text/60 rounded-full outline-none"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={status === 'loading' || status === 'success'}
-          />
-          <motion.button
-            type="submit"
-            whileHover={{
-              boxShadow: '0 0 6px 1px var(--brand-accent), 0 0 16px 4px var(--brand-primary)',
-              scale: 1.04,
-            }}
-            whileTap={{ scale: 0.98 }}
-            className="px-6 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-full shadow hover:from-brand-primary hover:to-brand-secondary/80 transition min-w-[110px]"
-            disabled={status === 'loading' || status === 'success'}
-          >
-            {status === 'loading' ? (
-              <span className="animate-spin inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
-            ) : status === 'success' ? (
-              'Subscribed!'
-            ) : (
-              'Subscribe'
-            )}
-          </motion.button>
+        <form className="flex flex-col w-full max-w-md mx-auto gap-3" onSubmit={handleSubmit}>
+          <div className="flex gap-2 bg-brand-card/80 rounded-full p-1 border border-brand-border">
+            <input
+              type="text"
+              placeholder="Your name (optional)"
+              className="flex-1 px-5 py-3 bg-transparent text-brand-text placeholder:text-brand-text/60 rounded-full outline-none"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={status === 'loading' || status === 'success'}
+            />
+          </div>
+          <div className="flex gap-2 bg-brand-card/80 rounded-full p-1 border border-brand-border">
+            <input
+              type="email"
+              placeholder="Your email"
+              className="flex-1 px-5 py-3 bg-transparent text-brand-text placeholder:text-brand-text/60 rounded-full outline-none"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={status === 'loading' || status === 'success'}
+            />
+            <motion.button
+              type="submit"
+              whileHover={{
+                boxShadow: '0 0 6px 1px var(--brand-accent), 0 0 16px 4px var(--brand-primary)',
+                scale: 1.04,
+              }}
+              whileTap={{ scale: 0.98 }}
+              className="px-6 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-full shadow hover:from-brand-primary hover:to-brand-secondary/80 transition min-w-[110px]"
+              disabled={status === 'loading' || status === 'success'}
+            >
+              {status === 'loading' ? (
+                <span className="animate-spin inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
+              ) : status === 'success' ? (
+                'Subscribed!'
+              ) : (
+                'Subscribe'
+              )}
+            </motion.button>
+          </div>
         </form>
         <AnimatePresence>
           {status === 'error' && message && (
@@ -157,6 +167,14 @@ const NewsletterSection: React.FC = () => {
                 Get the latest prop firm news, reviews, and exclusive offers.
               </p>
               <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                <input
+                  type="text"
+                  placeholder="Your name (optional)"
+                  className="px-4 py-2 rounded-full border border-brand-border bg-brand-bg text-brand-text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={status === 'loading' || status === 'success'}
+                />
                 <input
                   type="email"
                   placeholder="Enter your email"

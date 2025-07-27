@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import EmailService from '@/lib/email';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email } = body;
+    const { email, name } = body;
 
     // Validate email
     if (!email || !email.includes('@')) {
@@ -41,6 +42,20 @@ export async function POST(request: Request) {
         },
       });
     }
+
+    // Send welcome email to subscriber
+    await EmailService.sendWelcomeEmail({
+      email,
+      name,
+      source: 'landing_page',
+    });
+
+    // Send admin notification
+    await EmailService.sendAdminNotification({
+      email,
+      name,
+      source: 'landing_page',
+    });
 
     // Get total active subscribers
     const totalSubscribers = await prisma.newsletterSubscription.count({

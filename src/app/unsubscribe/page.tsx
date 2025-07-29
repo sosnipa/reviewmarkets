@@ -56,7 +56,7 @@ const UnsubscribePage: React.FC = () => {
           setMessage(data.error || 'Failed to unsubscribe. Please try again.');
         }
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage('An error occurred. Please try again.');
     }
@@ -184,7 +184,7 @@ const UnsubscribePage: React.FC = () => {
           <Mail className="w-16 h-16 text-blue-600 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Unsubscribe</h1>
           <p className="text-gray-600">
-            We're sorry to see you go. You can unsubscribe from our newsletter below.
+            We&apos;re sorry to see you go. You can unsubscribe from our newsletter below.
           </p>
         </motion.div>
 
@@ -218,8 +218,8 @@ const UnsubscribePage: React.FC = () => {
                   <div className="text-sm text-yellow-800">
                     <p className="font-medium">Before you go...</p>
                     <p className="mt-1">
-                      You'll no longer receive our latest prop firm reviews, exclusive deals, and
-                      market insights.
+                      You&apos;ll no longer receive our latest prop firm reviews, exclusive deals,
+                      and market insights.
                     </p>
                   </div>
                 </div>

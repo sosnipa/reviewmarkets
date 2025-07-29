@@ -50,7 +50,7 @@ const PreferencesPage: React.FC = () => {
       } else {
         setMessage('Unable to load preferences. Please check your email link.');
       }
-    } catch (error) {
+    } catch {
       setMessage('An error occurred while loading preferences.');
     } finally {
       setLoading(false);
@@ -90,7 +90,7 @@ const PreferencesPage: React.FC = () => {
         setStatus('error');
         setMessage(data.error || 'Failed to update preferences.');
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage('An error occurred while updating preferences.');
     }
@@ -122,7 +122,7 @@ const PreferencesPage: React.FC = () => {
         setStatus('error');
         setMessage(data.error || 'Failed to unsubscribe.');
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage('An error occurred while unsubscribing.');
     }
@@ -155,7 +155,7 @@ const PreferencesPage: React.FC = () => {
         setStatus('error');
         setMessage(data.error || 'Failed to resubscribe.');
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage('An error occurred while resubscribing.');
     }
@@ -294,7 +294,11 @@ const PreferencesPage: React.FC = () => {
                     name="frequency"
                     value={option.value}
                     checked={preferences.emailFrequency === option.value}
-                    onChange={() => updatePreferences({ emailFrequency: option.value as any })}
+                    onChange={() =>
+                      updatePreferences({
+                        emailFrequency: option.value as 'weekly' | 'monthly' | 'promotional-only',
+                      })
+                    }
                     className="mt-1"
                   />
                   <div>
@@ -339,6 +343,7 @@ const PreferencesPage: React.FC = () => {
                       })
                     }
                     disabled={status === 'loading'}
+                    title={`${enabled ? 'Disable' : 'Enable'} ${category} emails`}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       enabled ? 'bg-blue-600' : 'bg-gray-200'
                     }`}

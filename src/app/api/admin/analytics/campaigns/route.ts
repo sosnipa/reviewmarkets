@@ -46,9 +46,9 @@ export async function GET(request: Request) {
     // Calculate statistics for each campaign
     const campaignStats = campaigns.map((campaign) => {
       const events = campaign.emailEvents || [];
-      const opened = events.filter((e: any) => e.eventType === 'opened').length;
-      const clicked = events.filter((e: any) => e.eventType === 'clicked').length;
-      const bounced = events.filter((e: any) => e.eventType === 'bounced').length;
+      const opened = events.filter((e: { eventType: string }) => e.eventType === 'opened').length;
+      const clicked = events.filter((e: { eventType: string }) => e.eventType === 'clicked').length;
+      const bounced = events.filter((e: { eventType: string }) => e.eventType === 'bounced').length;
 
       const openRate = campaign.sentTo > 0 ? (opened / campaign.sentTo) * 100 : 0;
       const clickRate = campaign.sentTo > 0 ? (clicked / campaign.sentTo) * 100 : 0;

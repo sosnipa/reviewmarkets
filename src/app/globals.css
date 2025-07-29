@@ -24,7 +24,7 @@
   --ring: #171717;
   --chart-1: #3b82f6;
   --chart-2: #06b6d4;
-  --chart-3: #8b5cf6;
+  --chart-3: #10b981;
   --chart-4: #f59e0b;
   --chart-5: #ef4444;
   --sidebar: #ffffff;
@@ -35,11 +35,11 @@
   --sidebar-accent-foreground: #171717;
   --sidebar-border: #e5e5e5;
   --sidebar-ring: #171717;
-  --brand-bg: #f8f6ff;
+  --brand-bg: #f0fdf4;
   --brand-card: #ffffff;
-  --brand-primary: #a21caf;
-  --brand-secondary: #7c3aed;
-  --brand-accent: #c084fc; /* Brighter, more visible purple */
+  --brand-primary: #059669;
+  --brand-secondary: #10b981;
+  --brand-accent: #34d399; /* Brighter, more visible green */
   --brand-text: #171717;
   --brand-border: #e5e5e5;
 }
@@ -65,7 +65,7 @@
   --ring: #737373;
   --chart-1: #3b82f6;
   --chart-2: #06b6d4;
-  --chart-3: #8b5cf6;
+  --chart-3: #10b981;
   --chart-4: #f59e0b;
   --chart-5: #ef4444;
   --sidebar: #171717;
@@ -76,11 +76,11 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: rgba(255, 255, 255, 0.1);
   --sidebar-ring: #737373;
-  --brand-bg: #18122b;
-  --brand-card: #232046;
-  --brand-primary: #a21caf;
-  --brand-secondary: #7c3aed;
-  --brand-accent: #c084fc; /* Brighter, more visible purple for dark mode */
+  --brand-bg: #064e3b;
+  --brand-card: #065f46;
+  --brand-primary: #059669;
+  --brand-secondary: #10b981;
+  --brand-accent: #34d399; /* Brighter, more visible green for dark mode */
   --brand-text: #fafafa;
   --brand-border: rgba(255, 255, 255, 0.1);
 }

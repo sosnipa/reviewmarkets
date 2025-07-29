@@ -10,6 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Admin users for secure authentication
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Hashed password
+  name      String?
+  role      String   @default("admin")
+  resetToken String? // For password reset
+  resetTokenExpiry DateTime? // Token expiration
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
 // Users table for authentication and user management
 model User {
   id        String   @id @default(cuid())
@@ -134,13 +149,52 @@ model MarketData {
 
 // Email campaigns for tracking bulk emails
 model EmailCampaign {
-  id        String   @id @default(cuid())
-  subject   String
-  content   String
-  type      String   // custom, promotional, newsletter
-  sentTo    Int
-  status    String   // sent, failed, pending
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  subject     String
+  content     String
+  type        String   // custom, promotional, newsletter
+  sentTo      Int
+  status      String   // sent, failed, pending, scheduled
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  openedCount Int      @default(0)
+  clickedCount Int     @default(0)
+  bounceCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  emailEvents EmailEvent[]
 
   @@map("email_campaigns")
+}
+
+// Email events for tracking opens, clicks, bounces
+model EmailEvent {
+  id          String   @id @default(cuid())
+  campaignId  String
+  subscriberEmail String
+  eventType   String   // sent, opened, clicked, bounced, unsubscribed
+  timestamp   DateTime @default(now())
+  userAgent   String?
+  ipAddress   String?
+
+  // Relations
+  campaign EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("email_events")
+}
+
+// Email templates for reusable content
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  subject     String
+  content     String
+  type        String   // welcome, newsletter, promotional, support
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("email_templates")
 }

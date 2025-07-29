@@ -158,8 +158,8 @@ The app uses CSS custom properties for theming. Main colors are defined in `src/
 
 ```css
 --brand-primary: #a21caf;
---brand-secondary: #7c3aed;
---brand-accent: #c084fc;
+--brand-secondary: #10b981;
+--brand-accent: #34d399;
 ```
 
 ### Components

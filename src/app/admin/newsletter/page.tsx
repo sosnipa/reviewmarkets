@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Subscriber {
   id: string;
@@ -17,36 +17,65 @@ interface NewsletterStats {
   inactive: number;
 }
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  content: string;
+  type: string;
+  isActive: boolean;
+}
+
 const NewsletterAdminPage: React.FC = () => {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [stats, setStats] = useState<NewsletterStats>({ total: 0, active: 0, inactive: 0 });
   const [loading, setLoading] = useState(true);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [showIndividualEmailModal, setShowIndividualEmailModal] = useState(false);
+  const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
   const [emailForm, setEmailForm] = useState({
     subject: '',
     content: '',
     type: 'custom' as 'custom' | 'promotional',
+    selectedTemplate: '',
+  });
+  const [individualEmailForm, setIndividualEmailForm] = useState({
+    subject: '',
+    content: '',
+    type: 'custom' as 'custom' | 'promotional',
+    emailType: 'newsletter' as 'newsletter' | 'support',
+    selectedTemplate: '',
   });
 
-  // Fetch subscribers
-  const fetchSubscribers = async () => {
+  // Fetch subscribers and templates
+  const fetchData = async () => {
     try {
-      const response = await fetch('/api/admin/newsletter');
-      const data = await response.json();
+      const [subscribersRes, templatesRes] = await Promise.all([
+        fetch('/api/admin/newsletter'),
+        fetch('/api/admin/templates'),
+      ]);
 
-      if (data.success) {
-        setSubscribers(data.subscribers);
-        setStats(data.stats);
+      const subscribersData = await subscribersRes.json();
+      const templatesData = await templatesRes.json();
+
+      if (subscribersData.success) {
+        setSubscribers(subscribersData.subscribers);
+        setStats(subscribersData.stats);
+      }
+
+      if (templatesData.templates) {
+        setTemplates(templatesData.templates.filter((t: EmailTemplate) => t.isActive));
       }
     } catch (error) {
-      console.error('Error fetching subscribers:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchSubscribers();
+    fetchData();
   }, []);
 
   // Send bulk email
@@ -68,7 +97,7 @@ const NewsletterAdminPage: React.FC = () => {
 
       if (data.success) {
         alert(`Email sent successfully to ${data.totalSent} subscribers!`);
-        setEmailForm({ subject: '', content: '', type: 'custom' });
+        setEmailForm({ subject: '', content: '', type: 'custom', selectedTemplate: '' });
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -78,6 +107,61 @@ const NewsletterAdminPage: React.FC = () => {
     } finally {
       setSendingEmail(false);
     }
+  };
+
+  // Send individual email
+  const sendIndividualEmail = async () => {
+    if (!selectedSubscriber || !individualEmailForm.subject || !individualEmailForm.content) {
+      alert('Please fill in both subject and content');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const response = await fetch('/api/admin/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...individualEmailForm,
+          individualEmail: selectedSubscriber.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert(`Email sent successfully to ${selectedSubscriber.email}!`);
+        setIndividualEmailForm({
+          subject: '',
+          content: '',
+          type: 'custom',
+          emailType: 'newsletter',
+          selectedTemplate: '',
+        });
+        setShowIndividualEmailModal(false);
+        setSelectedSubscriber(null);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Error sending email');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  // Open individual email modal
+  const openIndividualEmailModal = (subscriber: Subscriber) => {
+    setSelectedSubscriber(subscriber);
+    setIndividualEmailForm({
+      subject: '',
+      content: '',
+      type: 'custom',
+      emailType: 'newsletter',
+      selectedTemplate: '',
+    });
+    setShowIndividualEmailModal(true);
   };
 
   // Toggle subscriber status
@@ -92,7 +176,7 @@ const NewsletterAdminPage: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        fetchSubscribers(); // Refresh the list
+        fetchData(); // Refresh the list
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -114,7 +198,7 @@ const NewsletterAdminPage: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        fetchSubscribers(); // Refresh the list
+        fetchData(); // Refresh the list
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -136,9 +220,20 @@ const NewsletterAdminPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Newsletter Management</h1>
-          <p className="mt-2 text-gray-600">Manage subscribers and send bulk emails</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Newsletter Management</h1>
+            <p className="mt-2 text-gray-600">Manage subscribers and send bulk emails</p>
+          </div>
+          <button
+            onClick={async () => {
+              await fetch('/api/admin/logout', { method: 'POST' });
+              window.location.href = '/admin/login';
+            }}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            Logout
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -239,6 +334,33 @@ const NewsletterAdminPage: React.FC = () => {
                 <option value="promotional">Promotional Email</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Use Template (Optional)
+              </label>
+              <select
+                value={emailForm.selectedTemplate}
+                onChange={(e) => {
+                  const templateId = e.target.value;
+                  const template = templates.find((t) => t.id === templateId);
+                  setEmailForm({
+                    ...emailForm,
+                    selectedTemplate: templateId,
+                    subject: template ? template.subject : emailForm.subject,
+                    content: template ? template.content : emailForm.content,
+                  });
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Select template"
+              >
+                <option value="">No template</option>
+                {templates.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.name} ({template.type})
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="mb-4">
@@ -263,13 +385,15 @@ const NewsletterAdminPage: React.FC = () => {
             />
           </div>
 
-          <button
-            onClick={sendBulkEmail}
-            disabled={sendingEmail}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {sendingEmail ? 'Sending...' : `Send to ${stats.active} Active Subscribers`}
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={sendBulkEmail}
+              disabled={sendingEmail}
+              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {sendingEmail ? 'Sending...' : `Send to ${stats.active} Active Subscribers`}
+            </button>
+          </div>
         </motion.div>
 
         {/* Subscribers List */}
@@ -331,6 +455,12 @@ const NewsletterAdminPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
+                        onClick={() => openIndividualEmailModal(subscriber)}
+                        className="text-sm px-3 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      >
+                        Send Email
+                      </button>
+                      <button
                         onClick={() => toggleSubscriberStatus(subscriber.id, subscriber.isActive)}
                         className={`text-sm px-3 py-1 rounded ${
                           subscriber.isActive
@@ -354,6 +484,157 @@ const NewsletterAdminPage: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Individual Email Modal */}
+      <AnimatePresence>
+        {showIndividualEmailModal && selectedSubscriber && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            onClick={() => setShowIndividualEmailModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Send Email to {selectedSubscriber.email}
+                </h3>
+                <button
+                  onClick={() => setShowIndividualEmailModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                  aria-label="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Type</label>
+                  <select
+                    value={individualEmailForm.type}
+                    onChange={(e) =>
+                      setIndividualEmailForm({
+                        ...individualEmailForm,
+                        type: e.target.value as 'custom' | 'promotional',
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Email type"
+                  >
+                    <option value="custom">Custom Email</option>
+                    <option value="promotional">Promotional Email</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Category
+                  </label>
+                  <select
+                    value={individualEmailForm.emailType}
+                    onChange={(e) =>
+                      setIndividualEmailForm({
+                        ...individualEmailForm,
+                        emailType: e.target.value as 'newsletter' | 'support',
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Email category"
+                  >
+                    <option value="newsletter">Newsletter</option>
+                    <option value="support">Support Email</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Use Template (Optional)
+                  </label>
+                  <select
+                    value={individualEmailForm.selectedTemplate}
+                    onChange={(e) => {
+                      const templateId = e.target.value;
+                      const template = templates.find((t) => t.id === templateId);
+                      setIndividualEmailForm({
+                        ...individualEmailForm,
+                        selectedTemplate: templateId,
+                        subject: template ? template.subject : individualEmailForm.subject,
+                        content: template ? template.content : individualEmailForm.content,
+                      });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Select template"
+                  >
+                    <option value="">No template</option>
+                    {templates.map((template) => (
+                      <option key={template.id} value={template.id}>
+                        {template.name} ({template.type})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                <input
+                  type="text"
+                  value={individualEmailForm.subject}
+                  onChange={(e) =>
+                    setIndividualEmailForm({ ...individualEmailForm, subject: e.target.value })
+                  }
+                  placeholder="Enter email subject..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Content (HTML)
+                </label>
+                <textarea
+                  value={individualEmailForm.content}
+                  onChange={(e) =>
+                    setIndividualEmailForm({ ...individualEmailForm, content: e.target.value })
+                  }
+                  placeholder="Enter email content (HTML supported)..."
+                  rows={6}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowIndividualEmailModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={sendIndividualEmail}
+                  disabled={sendingEmail}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {sendingEmail ? 'Sending...' : 'Send Email'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

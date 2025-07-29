@@ -39,9 +39,9 @@ interface ContactMessage {
 }
 
 const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'firms' | 'testimonials' | 'contacts' | 'newsletter'>(
-    'firms'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'dashboard' | 'firms' | 'testimonials' | 'contacts' | 'newsletter' | 'templates'
+  >('dashboard');
   const [firms, setFirms] = useState<Firm[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [contacts, setContacts] = useState<ContactMessage[]>([]);
@@ -103,20 +103,49 @@ const AdminPanel: React.FC = () => {
   return (
     <div className="min-h-screen bg-brand-bg">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-brand-primary mb-8">Admin Panel</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-brand-primary">Admin Panel</h1>
+          <div className="flex space-x-3">
+            <a
+              href="/admin/change-password"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Change Password
+            </a>
+            <button
+              onClick={async () => {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                window.location.href = '/admin/login';
+              }}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap gap-2 mb-8">
           {[
+            { key: 'dashboard', label: 'Dashboard', count: 0 },
             { key: 'firms', label: 'Firms', count: firms.length },
             { key: 'testimonials', label: 'Testimonials', count: testimonials.length },
             { key: 'contacts', label: 'Contacts', count: contacts.length },
             { key: 'newsletter', label: 'Newsletter', count: newsletterStats.subscribers },
+            { key: 'templates', label: 'Templates', count: 0 },
           ].map((tab) => (
             <button
               key={tab.key}
               onClick={() =>
-                setActiveTab(tab.key as 'firms' | 'testimonials' | 'contacts' | 'newsletter')
+                setActiveTab(
+                  tab.key as
+                    | 'dashboard'
+                    | 'firms'
+                    | 'testimonials'
+                    | 'contacts'
+                    | 'newsletter'
+                    | 'templates'
+                )
               }
               className={`px-4 py-2 rounded-lg font-medium transition ${
                 activeTab === tab.key
@@ -256,6 +285,56 @@ const AdminPanel: React.FC = () => {
             </div>
           )}
 
+          {activeTab === 'dashboard' && (
+            <div>
+              <h2 className="text-2xl font-bold text-brand-primary mb-4">Admin Dashboard</h2>
+              <div className="text-center py-8">
+                <div className="text-4xl font-bold text-brand-primary mb-2">
+                  Welcome to Admin Panel
+                </div>
+                <p className="text-brand-text/60">Manage your website and email campaigns</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-brand-bg/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-brand-primary mb-2">Enhanced Dashboard</h3>
+                  <p className="text-sm text-brand-text/70 mb-4">
+                    Access the full admin dashboard with advanced features:
+                  </p>
+                  <ul className="text-sm text-brand-text/70 space-y-1 mb-4">
+                    <li>• Email campaign tracking</li>
+                    <li>• Subscriber analytics</li>
+                    <li>• Email templates management</li>
+                    <li>• Bulk email scheduling</li>
+                  </ul>
+                  <a
+                    href="/admin/dashboard"
+                    className="inline-block bg-brand-primary text-white px-6 py-2 rounded-lg hover:bg-brand-accent transition-colors"
+                  >
+                    Go to Dashboard
+                  </a>
+                </div>
+                <div className="bg-brand-bg/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-brand-primary mb-2">Email Templates</h3>
+                  <p className="text-sm text-brand-text/70 mb-4">
+                    Create and manage email templates:
+                  </p>
+                  <ul className="text-sm text-brand-text/70 space-y-1 mb-4">
+                    <li>• Welcome emails</li>
+                    <li>• Newsletter templates</li>
+                    <li>• Promotional campaigns</li>
+                    <li>• Support emails</li>
+                  </ul>
+                  <a
+                    href="/admin/templates"
+                    className="inline-block bg-brand-primary text-white px-6 py-2 rounded-lg hover:bg-brand-accent transition-colors"
+                  >
+                    Manage Templates
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'newsletter' && (
             <div>
               <h2 className="text-2xl font-bold text-brand-primary mb-4">Newsletter Subscribers</h2>
@@ -281,6 +360,37 @@ const AdminPanel: React.FC = () => {
                   className="inline-block bg-brand-primary text-white px-6 py-2 rounded-lg hover:bg-brand-accent transition-colors"
                 >
                   Go to Newsletter Management
+                </a>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'templates' && (
+            <div>
+              <h2 className="text-2xl font-bold text-brand-primary mb-4">Email Templates</h2>
+              <div className="text-center py-8">
+                <div className="text-4xl font-bold text-brand-primary mb-2">
+                  Template Management
+                </div>
+                <p className="text-brand-text/60">Create and manage email templates</p>
+              </div>
+              <div className="bg-brand-bg/50 rounded-lg p-4">
+                <h3 className="font-semibold text-brand-primary mb-2">Template Features</h3>
+                <p className="text-sm text-brand-text/70 mb-4">
+                  Full template management system available:
+                </p>
+                <ul className="text-sm text-brand-text/70 space-y-1 mb-4">
+                  <li>• Create custom email templates</li>
+                  <li>• Edit existing templates</li>
+                  <li>• Template categories (welcome, newsletter, promotional, support)</li>
+                  <li>• HTML editor with preview</li>
+                  <li>• Template activation/deactivation</li>
+                </ul>
+                <a
+                  href="/admin/templates"
+                  className="inline-block bg-brand-primary text-white px-6 py-2 rounded-lg hover:bg-brand-accent transition-colors"
+                >
+                  Manage Templates
                 </a>
               </div>
             </div>

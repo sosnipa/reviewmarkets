@@ -35,16 +35,16 @@ export default function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo + Title */}
-          <div className="flex items-center space-x-3">
-            <Image src="/Logo.png" alt="Logo" width={32} height={32} />
-            <h1 className="text-xl font-bold text-brand-primary dark:text-brand-accent">
+          <div className="flex items-center space-x-3 min-w-0 flex-shrink-0">
+            <Image src="/Logo.png" alt="Logo" width={32} height={32} className="flex-shrink-0" />
+            <h1 className="text-xl font-bold text-brand-primary dark:text-brand-accent truncate">
               ReviewMarkets
             </h1>
           </div>
 
           {/* Desktop Search + Nav */}
-          <div className="hidden md:flex items-center space-x-8">
-            <div className="relative">
+          <div className="hidden md:flex items-center space-x-6 flex-1 justify-center max-w-4xl">
+            <div className="relative flex-shrink-0">
               <Input
                 type="text"
                 placeholder="Search prop firms..."
@@ -53,45 +53,48 @@ export default function Navbar() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-accent/70 dark:text-brand-accent/50" />
             </div>
 
-            <nav className="flex items-center space-x-8">
+            <nav className="flex items-center space-x-6">
               <a
                 href="#features"
-                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium"
+                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium whitespace-nowrap"
               >
                 Features
               </a>
               <a
                 href="#firms"
-                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium"
+                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium whitespace-nowrap"
               >
                 Firms
               </a>
               <a
                 href="#testimonials"
-                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium"
+                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium whitespace-nowrap"
               >
                 Testimonials
               </a>
               <a
                 href="#newsletter"
-                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium"
+                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium whitespace-nowrap"
               >
                 Newsletter
               </a>
               <a
                 href="#footer"
-                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium"
+                className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium whitespace-nowrap"
               >
                 Contact
               </a>
-
-              <a
-                href="#get-started"
-                className="ml-4 px-5 py-2 rounded-full bg-brand-primary text-white font-semibold shadow hover:bg-brand-accent transition-colors dark:bg-brand-accent dark:hover:bg-brand-primary dark:text-brand-bg"
-              >
-                Get Started
-              </a>
             </nav>
+          </div>
+
+          {/* Get Started Button */}
+          <div className="hidden md:flex items-center flex-shrink-0">
+            <a
+              href="#get-started"
+              className="px-6 py-2 rounded-full bg-brand-primary text-white font-semibold shadow hover:bg-brand-accent transition-colors dark:bg-brand-accent dark:hover:bg-brand-primary dark:text-brand-bg whitespace-nowrap"
+            >
+              Get Started
+            </a>
           </div>
 
           {/* Mobile Hamburger */}

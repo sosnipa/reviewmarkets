@@ -180,7 +180,7 @@ export default function MarketDataSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <MarketCard title="Forex" data={marketData.forex} color="text-blue-600" />
-          <MarketCard title="Crypto" data={marketData.crypto} color="text-purple-600" />
+          <MarketCard title="Crypto" data={marketData.crypto} color="text-green-600" />
           <MarketCard title="Indices" data={marketData.indices} color="text-green-600" />
         </div>
 

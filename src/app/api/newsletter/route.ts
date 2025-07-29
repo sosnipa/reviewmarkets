@@ -1,21 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import EmailService from '@/lib/email';
+import hybridEmailService from '@/lib/email-hybrid';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { email, name } = body;
 
-    // Validate email
-    if (!email || !email.includes('@')) {
-      return NextResponse.json(
-        { success: false, message: 'Please enter a valid email address.' },
-        { status: 400 }
-      );
+    if (!email) {
+      return NextResponse.json({ success: false, message: 'Email is required.' }, { status: 400 });
     }
 
-    // Check if already subscribed
+    // Check if email already exists
     const existingSubscription = await prisma.newsletterSubscription.findUnique({
       where: { email },
     });
@@ -23,54 +19,53 @@ export async function POST(request: Request) {
     if (existingSubscription) {
       if (existingSubscription.isActive) {
         return NextResponse.json(
-          { success: false, message: 'You are already subscribed to our newsletter!' },
+          { success: false, message: 'Email already subscribed to newsletter.' },
           { status: 400 }
         );
       } else {
-        // Reactivate subscription
+        // Reactivate inactive subscription
         await prisma.newsletterSubscription.update({
           where: { email },
           data: { isActive: true },
         });
+
+        // Send welcome email
+        await hybridEmailService.sendWelcomeEmail(email, name);
+
+        // Send admin notification
+        await hybridEmailService.sendAdminNotification(email, name);
+
+        return NextResponse.json({
+          success: true,
+          message: 'Subscription reactivated successfully!',
+        });
       }
-    } else {
-      // Create new subscription
-      await prisma.newsletterSubscription.create({
-        data: {
-          email,
-          source: 'landing_page',
-        },
-      });
     }
 
-    // Send welcome email to subscriber
-    await EmailService.sendWelcomeEmail({
-      email,
-      name,
-      source: 'landing_page',
+    // Create new subscription
+    const subscription = await prisma.newsletterSubscription.create({
+      data: {
+        email,
+        source: 'website',
+        isActive: true,
+      },
     });
 
-    // Send admin notification
-    await EmailService.sendAdminNotification({
-      email,
-      name,
-      source: 'landing_page',
-    });
+    // Send welcome email using Resend (better deliverability)
+    await hybridEmailService.sendWelcomeEmail(email, name);
 
-    // Get total active subscribers
-    const totalSubscribers = await prisma.newsletterSubscription.count({
-      where: { isActive: true },
-    });
+    // Send admin notification using SMTP (support communication)
+    await hybridEmailService.sendAdminNotification(email, name);
 
     return NextResponse.json({
       success: true,
-      message: "You're subscribed! Welcome to our newsletter.",
-      totalSubscribers,
+      message: 'Subscribed successfully!',
+      subscription,
     });
   } catch (error) {
-    console.error('Newsletter subscription error:', error);
+    console.error('Error subscribing to newsletter:', error);
     return NextResponse.json(
-      { success: false, message: 'Something went wrong. Please try again.' },
+      { success: false, message: 'Error subscribing to newsletter.' },
       { status: 500 }
     );
   }

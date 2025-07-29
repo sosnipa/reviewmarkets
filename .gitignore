@@ -62,3 +62,21 @@ logs/
 .vscode/
 .idea/
 /src/generated/prisma
+
+# production specific
+dev.db
+*.db
+*.sqlite
+*.sqlite3
+
+# test files
+scripts/
+test-*.ts
+*-test.ts
+*.test.ts
+*.spec.ts
+
+# temporary files
+*.tmp
+*.temp
+.cache/

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -20,7 +20,7 @@ interface SubscriptionPreferences {
   };
 }
 
-const PreferencesPage: React.FC = () => {
+const PreferencesContent: React.FC = () => {
   const searchParams = useSearchParams();
   const [preferences, setPreferences] = useState<SubscriptionPreferences | null>(null);
   const [loading, setLoading] = useState(true);
@@ -392,6 +392,20 @@ const PreferencesPage: React.FC = () => {
         </motion.div>
       </div>
     </div>
+  );
+};
+
+const PreferencesPage: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <PreferencesContent />
+    </Suspense>
   );
 };
 

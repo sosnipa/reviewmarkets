@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
 // PUT - Update template
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const body = await request.json();
     const { name, subject, content, type, isActive } = body;
-    const { id } = params;
+    const { id } = await params;
 
     // Validate required fields
     if (!name || !subject || !content || !type) {
@@ -56,9 +56,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // DELETE - Delete template
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Check if template exists
     const existingTemplate = await prisma.emailTemplate.findUnique({

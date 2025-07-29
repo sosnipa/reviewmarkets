@@ -1,9 +1,9 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-const ResetPasswordPage: React.FC = () => {
+const ResetPasswordContent: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -167,6 +167,20 @@ const ResetPasswordPage: React.FC = () => {
         </form>
       </div>
     </div>
+  );
+};
+
+const ResetPasswordPage: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 };
 

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
-const UnsubscribePage: React.FC = () => {
+const UnsubscribeContent: React.FC = () => {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'not-found'>(
@@ -254,6 +254,20 @@ const UnsubscribePage: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const UnsubscribePage: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <UnsubscribeContent />
+    </Suspense>
   );
 };
 

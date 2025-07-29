@@ -16,23 +16,29 @@ interface BulkEmailData {
 }
 
 class HybridEmailService {
-  private resend: Resend;
-  private smtpTransporter: nodemailer.Transporter;
+  private resend: Resend | null = null;
+  private smtpTransporter: nodemailer.Transporter | null = null;
 
-  constructor() {
-    // Initialize Resend for newsletter emails
-    this.resend = new Resend(process.env.RESEND_API_KEY);
+  private getResend() {
+    if (!this.resend) {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    }
+    return this.resend;
+  }
 
-    // Initialize SMTP for support emails
-    this.smtpTransporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'reviewmarket.org',
-      port: parseInt(process.env.SMTP_PORT || '465'),
-      secure: true, // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER || 'support@reviewmarket.org',
-        pass: process.env.SMTP_PASS || '',
-      },
-    });
+  private getSmtpTransporter() {
+    if (!this.smtpTransporter) {
+      this.smtpTransporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'reviewmarket.org',
+        port: parseInt(process.env.SMTP_PORT || '465'),
+        secure: true, // true for 465, false for other ports
+        auth: {
+          user: process.env.SMTP_USER || 'support@reviewmarket.org',
+          pass: process.env.SMTP_PASS || '',
+        },
+      });
+    }
+    return this.smtpTransporter;
   }
 
   // Send email using Resend (for newsletters)
@@ -42,7 +48,7 @@ class HybridEmailService {
     }
 
     try {
-      const result = await this.resend.emails.send({
+      const result = await this.getResend().emails.send({
         from: data.from || process.env.EMAIL_FROM || 'onboarding@resend.dev',
         to: Array.isArray(data.to) ? data.to[0] : data.to, // Only first recipient in TO
         bcc: Array.isArray(data.to) && data.to.length > 1 ? data.to.slice(1) : undefined, // Rest in BCC
@@ -60,7 +66,7 @@ class HybridEmailService {
   // Send email using cPanel SMTP (for support)
   async sendSmtpEmail(data: EmailData) {
     try {
-      const result = await this.smtpTransporter.sendMail({
+      const result = await this.getSmtpTransporter().sendMail({
         from: data.from || process.env.SMTP_USER || 'support@reviewmarket.org',
         to: Array.isArray(data.to) ? data.to[0] : data.to, // Only first recipient in TO
         bcc: Array.isArray(data.to) && data.to.length > 1 ? data.to.slice(1) : undefined, // Rest in BCC

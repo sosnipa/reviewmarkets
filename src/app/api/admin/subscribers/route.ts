@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
+interface WhereClause {
+  email?: {
+    contains: string;
+    mode: 'insensitive';
+  };
+  isActive?: boolean;
+}
+
 // Get all subscribers with pagination and filtering
 export async function GET(request: Request) {
   try {
@@ -13,7 +21,7 @@ export async function GET(request: Request) {
     const skip = (page - 1) * limit;
 
     // Build where clause
-    const where: any = {};
+    const where: WhereClause = {};
 
     if (search) {
       where.email = {

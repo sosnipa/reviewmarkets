@@ -65,7 +65,15 @@ export class TrustpilotService {
       const data = await response.json();
 
       return {
-        reviews: data.reviews.map((review: any) => ({
+        reviews: data.reviews.map((review: {
+          id: string;
+          author: { name: string; avatar?: string };
+          rating: number;
+          text: string;
+          title?: string;
+          createdAt: string;
+          helpful?: number;
+        }) => ({
           id: review.id,
           author: {
             name: review.author.name,
@@ -94,7 +102,7 @@ export class TrustpilotService {
    * Search for businesses by name
    * Note: Trustpilot API requires a paid subscription
    */
-  static async searchBusinesses(query: string): Promise<any[]> {
+  static async searchBusinesses(query: string): Promise<Array<{ id: string; name: string }>> {
     try {
       if (!this.API_KEY) {
         console.log('Trustpilot API key not configured - API requires paid subscription');

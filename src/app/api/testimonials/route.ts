@@ -29,7 +29,17 @@ export async function GET() {
 
     // Try to get Trustpilot reviews if API key is configured
     // Note: Trustpilot API requires a paid subscription
-    let trustpilotTestimonials: any[] = [];
+    const trustpilotTestimonials: Array<{
+      id: string;
+      name: string;
+      title: string;
+      review: string;
+      avatar?: string;
+      rating: number;
+      isApproved: boolean;
+      source: string;
+      createdAt: string;
+    }> = [];
     if (process.env.TRUSTPILOT_API_KEY) {
       try {
         const firmNames = ['FTMO', 'The5ers', 'MyForexFunds', 'Earn2Trade', 'SurgeTrader'];

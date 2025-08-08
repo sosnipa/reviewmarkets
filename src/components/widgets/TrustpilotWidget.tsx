@@ -5,12 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface TrustpilotWidgetProps {
-  businessId?: string;
   className?: string;
 }
 
 const TrustpilotWidget: React.FC<TrustpilotWidgetProps> = ({
-  businessId = 'reviewmarket.org',
   className = '',
 }) => {
   useEffect(() => {
@@ -73,7 +71,7 @@ const TrustpilotWidget: React.FC<TrustpilotWidgetProps> = ({
 
           {/* Alternative: Direct link to Trustpilot */}
           <div className="text-center pt-4 border-t">
-            <p className="text-sm text-gray-600 mb-2">Can't see the widget?</p>
+            <p className="text-sm text-gray-600 mb-2">Can&apos;t see the widget?</p>
             <a
               href="https://www.trustpilot.com/review/reviewmarket.org"
               target="_blank"

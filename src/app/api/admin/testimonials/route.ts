@@ -2,6 +2,20 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getAdminFromRequest } from '@/lib/auth';
 
+interface WhereClause {
+  isApproved?: boolean;
+  OR?: Array<{
+    name?: { contains: string; mode: 'insensitive' };
+    title?: { contains: string; mode: 'insensitive' };
+    review?: { contains: string; mode: 'insensitive' };
+    firmName?: { contains: string; mode: 'insensitive' };
+  }>;
+}
+
+interface UpdateData {
+  isApproved?: boolean;
+}
+
 export async function GET(request: Request) {
   try {
     // Verify admin authentication
@@ -19,7 +33,7 @@ export async function GET(request: Request) {
     const skip = (page - 1) * limit;
 
     // Build where clause
-    const where: any = {};
+    const where: WhereClause = {};
     if (status === 'approved') {
       where.isApproved = true;
     } else if (status === 'pending') {
@@ -119,7 +133,7 @@ export async function PUT(request: Request) {
       );
     }
 
-    let updateData: any = {};
+    let updateData: UpdateData = {};
 
     switch (action) {
       case 'approve':

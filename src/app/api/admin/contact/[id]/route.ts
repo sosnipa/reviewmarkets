@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
+interface UpdateData {
+  isRead?: boolean;
+  isReplied?: boolean;
+  reply?: string;
+  repliedAt?: Date;
+}
+
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
     const body = await request.json();
     const { isRead, isReplied, reply, repliedAt } = body;
 
-    const updateData: any = {};
+    const updateData: UpdateData = {};
 
     if (typeof isRead === 'boolean') {
       updateData.isRead = isRead;

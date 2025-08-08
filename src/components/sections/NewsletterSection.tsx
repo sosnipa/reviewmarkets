@@ -1,5 +1,5 @@
 'use client';
-import NewsletterForm from './NewsletterForm';
+import NewsletterForm from '../forms/NewsletterForm';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 

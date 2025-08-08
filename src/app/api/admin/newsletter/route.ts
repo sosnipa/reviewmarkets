@@ -85,7 +85,7 @@ export async function POST(request: Request) {
             </head>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
               <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-                <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarkets</h1>
+                <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarket</h1>
               </div>
               
               <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
               </div>
               
               <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
-                <p>© 2024 ReviewMarkets. All rights reserved.</p>
+                <p>© 2025 ReviewMarket. All rights reserved.</p>
                 <p><a href="#" style="color: #10b981;">Unsubscribe</a> | <a href="#" style="color: #10b981;">Manage Preferences</a></p>
               </div>
             </body>
@@ -171,7 +171,7 @@ export async function POST(request: Request) {
           </head>
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-              <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarkets</h1>
+              <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarket</h1>
             </div>
             
             <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
@@ -179,7 +179,7 @@ export async function POST(request: Request) {
             </div>
             
             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
-              <p>© 2024 ReviewMarkets. All rights reserved.</p>
+              <p>© 2025 ReviewMarket. All rights reserved.</p>
               <p><a href="#" style="color: #10b981;">Unsubscribe</a> | <a href="#" style="color: #10b981;">Manage Preferences</a></p>
             </div>
           </body>

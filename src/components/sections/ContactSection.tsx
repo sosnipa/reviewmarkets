@@ -106,7 +106,7 @@ const ContactSection: React.FC = () => {
           <div className="space-y-2">
             <h3 className="font-bold text-lg mb-1 text-brand-primary">Contact Information</h3>
             <div className="flex items-center gap-2 text-brand-text/70">
-              <Mail className="h-5 w-5 text-brand-accent" /> support@reviewmarkets.com
+              <Mail className="h-5 w-5 text-brand-accent" /> support@reviewmarket.org
             </div>
             <div className="flex items-center gap-2 text-brand-text/70">
               <Phone className="h-5 w-5 text-brand-accent" /> +1 (555) 123-4567

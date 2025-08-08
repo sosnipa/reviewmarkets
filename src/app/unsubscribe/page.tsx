@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/Footer';
 
 const UnsubscribeContent: React.FC = () => {
   const searchParams = useSearchParams();
@@ -174,8 +176,10 @@ const UnsubscribeContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <main className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pt-16">
+        <div className="max-w-md w-full space-y-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -252,7 +256,9 @@ const UnsubscribeContent: React.FC = () => {
             </a>
           </p>
         </div>
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
     // Transform the data to match the expected format
     const transformedFirms = firms.map((firm) => ({
-      id: firm.id,
+      id: parseInt(firm.id.replace('firm_', '')),
       name: firm.name,
       logo: firm.logo,
       country: firm.country,
@@ -69,10 +69,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching firms:', error);
-    return NextResponse.json(
-      { success: false, message: 'Error fetching prop firms.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch firms' }, { status: 500 });
   }
 }
 
@@ -81,20 +78,49 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.name || !body.country) {
-      return NextResponse.json({ error: 'Name and country are required' }, { status: 400 });
+    if (!body.name || !body.country || !body.maxAllocation) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // In a real app, this would save to a database
-    const newFirm = {
-      id: Date.now().toString(),
-      ...body,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    // Create new firm
+    const firm = await prisma.propFirm.create({
+      data: {
+        name: body.name,
+        logo: body.logo || null,
+        country: body.country,
+        rating: parseFloat(body.rating) || 0,
+        reviews: parseInt(body.reviews) || 0,
+        years: parseInt(body.years) || 0,
+        assets: JSON.stringify(body.assets || []),
+        platforms: JSON.stringify(body.platforms || []),
+        maxAllocation: body.maxAllocation,
+        promo: body.promo || null,
+        description: body.description || null,
+        website: body.website || null,
+      },
+    });
+
+    // Transform the response to match frontend expectations
+    const transformedFirm = {
+      id: parseInt(firm.id.replace('firm_', '')),
+      name: firm.name,
+      logo: firm.logo,
+      country: firm.country,
+      rating: firm.rating,
+      reviews: firm.reviews,
+      years: firm.years,
+      assets: JSON.parse(firm.assets),
+      platforms: JSON.parse(firm.platforms),
+      maxAllocation: firm.maxAllocation,
+      promo: firm.promo,
+      description: firm.description,
+      website: firm.website,
+      lastUpdated: firm.updatedAt.toISOString(),
     };
 
-    return NextResponse.json(newFirm, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    return NextResponse.json(transformedFirm, { status: 201 });
+  } catch (error) {
+    console.error('Error creating firm:', error);
+    return NextResponse.json({ error: 'Failed to create firm' }, { status: 500 });
   }
 }

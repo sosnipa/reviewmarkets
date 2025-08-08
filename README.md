@@ -1,4 +1,4 @@
-# ReviewMarkets - Prop Firm Comparison Platform
+# ReviewMarket - Prop Firm Comparison Platform
 
 A modern, responsive web application for comparing prop trading firms. Built with Next.js 15, TypeScript, Tailwind CSS, and Framer Motion.
 
@@ -45,7 +45,7 @@ A modern, responsive web application for comparing prop trading firms. Built wit
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/sosnipa/reviewmarkets.git
+git clone https://github.com/sosnipa/reviewmarket.git
 cd propfirm-next
 ```
 
@@ -138,7 +138,7 @@ DATABASE_URL=your_database_url
 
 # Email Service (when implemented)
 SENDGRID_API_KEY=your_sendgrid_key
-EMAIL_FROM=noreply@reviewmarkets.com
+EMAIL_FROM=noreply@reviewmarket.org
 
 # Authentication (when implemented)
 NEXTAUTH_SECRET=your_secret
@@ -180,7 +180,7 @@ This project is licensed under the MIT License.
 
 ## 🆘 Support
 
-For support, email support@reviewmarkets.com or create an issue in the GitHub repository.
+For support, email support@reviewmarket.org or create an issue in the GitHub repository.
 
 ---
 

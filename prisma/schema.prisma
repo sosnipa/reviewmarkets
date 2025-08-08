@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:../database.db"
 }
 
 // Admin users for secure authentication
@@ -66,6 +66,9 @@ model ContactMessage {
   message   String
   createdAt DateTime @default(now())
   isRead    Boolean  @default(false)
+  isReplied Boolean  @default(false)
+  reply     String?  // Admin's reply message
+  repliedAt DateTime? // When admin replied
   userId    String?  // Optional link to user account
 
   // Relations
@@ -197,4 +200,23 @@ model EmailTemplate {
   updatedAt   DateTime @updatedAt
 
   @@map("email_templates")
+}
+
+// Testimonials for user reviews and testimonials
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  title       String
+  review      String
+  avatar      String?
+  rating      Int      @default(5)
+  isApproved  Boolean  @default(false)
+  source      String   @default("user") // user, trustpilot, admin
+  firmName    String?  // Associated prop firm if any
+  email       String?  // User email for verification
+  ipAddress   String?  // For spam prevention
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("testimonials")
 }

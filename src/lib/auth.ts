@@ -1,17 +1,24 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { NextRequest, NextResponse } from 'next/server';
+import * as jose from 'jose';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 // Security configuration
 const SALT_ROUNDS = 12;
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
 const JWT_EXPIRES_IN = '24h';
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
 
+// JWT secret - must be set in environment variables
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+
 // In-memory store for login attempts (in production, use Redis or database)
 const loginAttempts = new Map<string, { count: number; lockedUntil: number }>();
 
+// Admin user interface
 export interface AdminUser {
   id: string;
   email: string;
@@ -35,28 +42,31 @@ export class AuthService {
   }
 
   /**
-   * Generate a JWT token for admin authentication
+   * Generate JWT token for admin user
    */
-  static generateToken(user: AdminUser): string {
-    return jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    );
+  static async generateToken(user: AdminUser): Promise<string> {
+    const encoder = new TextEncoder();
+    const jwt = await new jose.SignJWT({ id: user.id, email: user.email, role: user.role })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime(JWT_EXPIRES_IN)
+      .sign(encoder.encode(JWT_SECRET));
+    return jwt;
   }
 
   /**
-   * Verify and decode a JWT token
+   * Verify JWT token and return user data
    */
-  static verifyToken(token: string): AdminUser | null {
+  static async verifyToken(token: string): Promise<AdminUser | null> {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as AdminUser;
-      return decoded;
-    } catch {
+      const { payload } = await jose.jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
+      return {
+        id: payload.id as string,
+        email: payload.email as string,
+        role: payload.role as 'admin',
+        createdAt: new Date(), // We don't need the actual createdAt for verification
+      };
+    } catch (error) {
+      console.log('AuthService.verifyToken - Token verification failed:', error);
       return null;
     }
   }
@@ -122,18 +132,20 @@ export class AuthService {
 /**
  * Middleware helper to extract and verify admin token
  */
-export function getAdminFromRequest(request: NextRequest): AdminUser | null {
-  const token = request.cookies.get('admin_token')?.value;
+export async function getAdminFromRequest(request: NextRequest): Promise<AdminUser | null> {
+  const adminTokenCookie = request.cookies.get('admin_token');
+  const token = adminTokenCookie?.value;
   if (!token) return null;
 
-  return AuthService.verifyToken(token);
+  const user = await AuthService.verifyToken(token);
+  return user;
 }
 
 /**
  * Create a secure admin session
  */
-export function createAdminSession(user: AdminUser): NextResponse {
-  const token = AuthService.generateToken(user);
+export async function createAdminSession(user: AdminUser): Promise<NextResponse> {
+  const token = await AuthService.generateToken(user);
   const response = NextResponse.json({
     success: true,
     user: { email: user.email, role: user.role },
@@ -141,8 +153,8 @@ export function createAdminSession(user: AdminUser): NextResponse {
 
   response.cookies.set('admin_token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: false, // Set to false for localhost
+    sameSite: 'lax',
     maxAge: 24 * 60 * 60, // 24 hours
     path: '/',
   });

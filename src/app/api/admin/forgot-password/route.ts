@@ -54,13 +54,13 @@ export async function POST(request: NextRequest) {
         </div>
         <p>This link will expire in 1 hour for security reasons.</p>
         <p>If you didn't request this password reset, please ignore this email.</p>
-        <p>Best regards,<br>ReviewMarkets Team</p>
+        <p>Best regards,<br>ReviewMarket Team</p>
       </div>
     `;
 
     await hybridEmailService.sendSmtpEmail({
       to: adminUser.email,
-      subject: 'Password Reset Request - ReviewMarkets Admin',
+      subject: 'Password Reset Request - ReviewMarket Admin',
       html: emailContent,
     });
 

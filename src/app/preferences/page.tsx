@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Settings, CheckCircle, XCircle, Bell, Calendar, Shield } from 'lucide-react';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/Footer';
 
 interface SubscriptionPreferences {
   email: string;
@@ -188,8 +190,10 @@ const PreferencesContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <main className="py-12 px-4 sm:px-6 lg:px-8 pt-16">
+        <div className="max-w-2xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -390,7 +394,9 @@ const PreferencesContent: React.FC = () => {
             </div>
           </div>
         </motion.div>
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

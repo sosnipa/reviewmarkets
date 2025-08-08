@@ -38,7 +38,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-3 min-w-0 flex-shrink-0">
             <Image src="/Logo.png" alt="Logo" width={32} height={32} className="flex-shrink-0" />
             <h1 className="text-xl font-bold text-brand-primary dark:text-brand-accent truncate">
-              ReviewMarkets
+              ReviewMarket
             </h1>
           </div>
 
@@ -67,7 +67,7 @@ export default function Navbar() {
                 Firms
               </a>
               <a
-                href="#testimonials"
+                href="/testimonials"
                 className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent transition-colors font-medium whitespace-nowrap"
               >
                 Testimonials
@@ -131,7 +131,7 @@ export default function Navbar() {
             Firms
           </a>
           <a
-            href="#testimonials"
+            href="/testimonials"
             className="text-brand-text dark:text-brand-text hover:text-brand-accent dark:hover:text-brand-accent font-medium"
             onClick={() => setMenuOpen(false)}
           >

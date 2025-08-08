@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getAdminFromRequest } from '@/lib/auth';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Protect admin routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
     // Skip login page itself
@@ -11,16 +11,17 @@ export function middleware(request: NextRequest) {
     }
 
     // Check for admin authentication using JWT
-    const adminUser = getAdminFromRequest(request);
+    const adminUser = await getAdminFromRequest(request);
 
     // If no valid token, redirect to admin login
     if (!adminUser) {
-      console.log('Admin authentication failed, redirecting to login');
-      const loginUrl = new URL('/admin/login', request.url);
-      return NextResponse.redirect(loginUrl);
+      return NextResponse.redirect(new URL('/admin/login', request.url));
     }
-    console.log('Admin authentication successful for:', adminUser.email);
+
+    // Valid token, allow access
+    return NextResponse.next();
   }
+
   return NextResponse.next();
 }
 

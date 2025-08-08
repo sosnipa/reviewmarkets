@@ -2,6 +2,10 @@ import React from 'react';
 
 const navColumns = [
   {
+    title: 'NAVIGATION',
+    links: [{ label: 'Home', href: '/' }],
+  },
+  {
     title: 'PROP FIRMS',
     links: [
       { label: 'All Prop Firms', href: '#' },
@@ -9,18 +13,17 @@ const navColumns = [
     ],
   },
   {
-    title: 'OFFERS',
+    title: 'COMMUNITY',
     links: [
-      { label: 'Exclusive Offers', href: '#' },
-      { label: 'Extra Account Promo', href: '#' },
-      { label: 'All Current Offers', href: '#' },
+      { label: 'Testimonials', href: '/testimonials' },
+      { label: 'Share Your Experience', href: '/testimonials' },
     ],
   },
   {
-    title: 'PROGRAMS',
+    title: 'ACCOUNT',
     links: [
-      { label: 'Loyalty Program', href: '#' },
-      { label: 'Affiliate Program', href: '#' },
+      { label: 'Email Preferences', href: '/preferences' },
+      { label: 'Unsubscribe', href: '/unsubscribe' },
     ],
   },
   {
@@ -87,8 +90,8 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-10">
         {/* Logo and Brand */}
         <div className="flex flex-col items-center md:items-start gap-3 min-w-[180px]">
-          <img src="/Logo.png" alt="Prop Firm Match Logo" className="w-10 h-10 mb-1" />
-          <span className="font-bold text-lg tracking-wide">Prop Firm Match</span>
+          <img src="/Logo.png" alt="ReviewMarket Logo" className="w-10 h-10 mb-1" />
+          <span className="font-bold text-lg tracking-wide">ReviewMarket</span>
         </div>
         {/* Navigation Columns */}
         <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
@@ -130,7 +133,7 @@ const Footer: React.FC = () => {
       </div>
       {/* Bottom Row */}
       <div className="max-w-7xl mx-auto mt-10 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-brand-border pt-6 text-xs text-brand-text/50">
-        <div>&copy; {new Date().getFullYear()} Prop Firm Match. All rights reserved.</div>
+        <div>&copy; {new Date().getFullYear()} ReviewMarket. All rights reserved.</div>
         <div className="flex gap-4">
           <a href="#" className="hover:text-brand-accent">
             Privacy Policy

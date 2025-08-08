@@ -1,11 +1,11 @@
 import Navbar from '@/components/layout/Navbar';
-import Hero from '@/components/Hero';
-import FirmsGridSection from '@/components/FirmsGridSection';
-import FeaturesSection from '@/components/FeaturesSection';
-import MarketDataSection from '@/components/MarketDataSection';
-import TestimonialsSection from '@/components/TestimonialsSection';
-import NewsletterSection from '@/components/NewsletterSection';
-import ContactSection from '@/components/ContactSection';
+import Hero from '@/components/sections/Hero';
+import FirmsGridSection from '@/components/sections/FirmsGridSection';
+import FeaturesSection from '@/components/sections/FeaturesSection';
+import MarketDataSection from '@/components/sections/MarketDataSection';
+import TestimonialsSection from '@/components/sections/TestimonialsSection';
+import NewsletterSection from '@/components/sections/NewsletterSection';
+import ContactSection from '@/components/sections/ContactSection';
 import Footer from '@/components/Footer';
 
 export default function Home() {

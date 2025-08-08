@@ -93,11 +93,11 @@ class HybridEmailService {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to ReviewMarkets!</title>
+          <title>Welcome to ReviewMarket!</title>
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarkets</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarket</h1>
             <p style="color: white; margin: 0; font-size: 18px; opacity: 0.9;">Welcome to the community! 🎉</p>
           </div>
           
@@ -115,7 +115,7 @@ class HybridEmailService {
           </div>
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
-            <p>© 2024 ReviewMarkets. All rights reserved.</p>
+            <p>© 2025 ReviewMarket. All rights reserved.</p>
             <p><a href="${unsubscribeUrl}" style="color: #10b981;">Unsubscribe</a> | <a href="${preferencesUrl}" style="color: #10b981;">Manage Preferences</a></p>
           </div>
         </body>
@@ -124,9 +124,9 @@ class HybridEmailService {
 
     return this.sendResendEmail({
       to: email,
-      subject: 'Welcome to ReviewMarkets Newsletter! 🎉',
+      subject: 'Welcome to ReviewMarket Newsletter! 🎉',
       html,
-      from: 'ReviewMarkets Team <support@reviewmarket.org>',
+      from: 'ReviewMarket Team <support@reviewmarket.org>',
     });
   }
 
@@ -149,7 +149,7 @@ class HybridEmailService {
           </div>
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
-            <p>ReviewMarkets Admin Notification</p>
+            <p>ReviewMarket Admin Notification</p>
           </div>
         </body>
       </html>
@@ -187,7 +187,7 @@ class HybridEmailService {
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarkets</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarket</h1>
             <p style="color: white; margin: 0; font-size: 16px;">Exclusive Promotional Offer</p>
           </div>
           
@@ -196,7 +196,7 @@ class HybridEmailService {
           </div>
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
-            <p>© 2024 ReviewMarkets. All rights reserved.</p>
+            <p>© 2025 ReviewMarket. All rights reserved.</p>
             <p><a href="${baseUrl}/unsubscribe" style="color: #10b981;">Unsubscribe</a> | <a href="${baseUrl}/preferences" style="color: #10b981;">Manage Preferences</a></p>
           </div>
         </body>
@@ -222,7 +222,7 @@ class HybridEmailService {
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarkets</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">ReviewMarket</h1>
             <p style="color: white; margin: 0; font-size: 16px;">Support Team</p>
           </div>
           
@@ -231,7 +231,7 @@ class HybridEmailService {
           </div>
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
-            <p>© 2024 ReviewMarkets. All rights reserved.</p>
+            <p>© 2025 ReviewMarket. All rights reserved.</p>
             <p>Need help? Reply to this email or contact us at support@reviewmarket.org</p>
           </div>
         </body>

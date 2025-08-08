@@ -1,83 +1,127 @@
-import axios from 'axios';
-
 interface TrustpilotReview {
   id: string;
-  title: string;
-  text: string;
-  rating: number;
-  createdAt: string;
   author: {
     name: string;
-    location?: string;
+    avatar?: string;
   };
-  helpful: number;
-  language: string;
-}
-
-interface TrustpilotBusiness {
-  id: string;
-  name: string;
-  displayName: string;
-  websiteUrl: string;
   rating: number;
-  reviewCount: number;
-  stars: {
-    '1': number;
-    '2': number;
-    '3': number;
-    '4': number;
-    '5': number;
-  };
-  location?: {
-    city: string;
-    country: string;
-  };
+  text: string;
+  title?: string;
+  createdAt: string;
+  helpful: number;
 }
 
 interface TrustpilotResponse {
   reviews: TrustpilotReview[];
-  business: TrustpilotBusiness;
-  totalReviews: number;
+  total: number;
+  averageRating: number;
 }
 
 export class TrustpilotService {
-  private static instance: TrustpilotService;
-  private apiKey: string;
+  private static readonly API_BASE = 'https://api.trustpilot.com/v1';
+  private static readonly API_KEY = process.env.TRUSTPILOT_API_KEY;
 
-  private constructor() {
-    this.apiKey = process.env.TRUSTPILOT_API_KEY || '';
-  }
+  /**
+   * Get reviews for a specific business
+   * Note: Trustpilot API requires a paid subscription
+   */
+  static async getBusinessReviews(
+    businessId: string,
+    limit: number = 10
+  ): Promise<TrustpilotResponse> {
+    try {
+      if (!this.API_KEY) {
+        console.log('Trustpilot API key not configured - API requires paid subscription');
+        return {
+          reviews: [],
+          total: 0,
+          averageRating: 0,
+        };
+      }
 
-  public static getInstance(): TrustpilotService {
-    if (!TrustpilotService.instance) {
-      TrustpilotService.instance = new TrustpilotService();
+      const response = await fetch(
+        `${this.API_BASE}/businesses/${businessId}/reviews?limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          console.log('Trustpilot API access denied - requires paid subscription');
+        } else {
+          console.error(`Trustpilot API error: ${response.status}`);
+        }
+        return {
+          reviews: [],
+          total: 0,
+          averageRating: 0,
+        };
+      }
+
+      const data = await response.json();
+
+      return {
+        reviews: data.reviews.map((review: any) => ({
+          id: review.id,
+          author: {
+            name: review.author.name,
+            avatar: review.author.avatar,
+          },
+          rating: review.rating,
+          text: review.text,
+          title: review.title,
+          createdAt: review.createdAt,
+          helpful: review.helpful || 0,
+        })),
+        total: data.total,
+        averageRating: data.averageRating,
+      };
+    } catch (error) {
+      console.error('Error fetching Trustpilot reviews:', error);
+      return {
+        reviews: [],
+        total: 0,
+        averageRating: 0,
+      };
     }
-    return TrustpilotService.instance;
   }
 
   /**
    * Search for businesses by name
+   * Note: Trustpilot API requires a paid subscription
    */
-  async searchBusinesses(query: string): Promise<TrustpilotBusiness[]> {
+  static async searchBusinesses(query: string): Promise<any[]> {
     try {
-      // Check if API key is available
-      if (!this.apiKey || this.apiKey === 'your_trustpilot_api_key_here') {
-        console.log('Trustpilot API key not configured, skipping API call');
+      if (!this.API_KEY) {
+        console.log('Trustpilot API key not configured - API requires paid subscription');
         return [];
       }
 
-      const response = await axios.get(`https://api.trustpilot.com/v1/business-units/find`, {
-        params: {
-          name: query,
-          country: 'US',
-        },
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${this.API_BASE}/businesses/search?query=${encodeURIComponent(query)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      return response.data.businessUnits || [];
+      if (!response.ok) {
+        if (response.status === 403) {
+          console.log('Trustpilot API access denied - requires paid subscription');
+        } else {
+          console.error(`Trustpilot API error: ${response.status}`);
+        }
+        return [];
+      }
+
+      const data = await response.json();
+      return data.businesses || [];
     } catch (error) {
       console.error('Error searching Trustpilot businesses:', error);
       return [];
@@ -85,120 +129,50 @@ export class TrustpilotService {
   }
 
   /**
-   * Get business details and reviews
+   * Get reviews for multiple prop firms
    */
-  async getBusinessReviews(
-    businessId: string,
-    page: number = 1
-  ): Promise<TrustpilotResponse | null> {
-    try {
-      const [businessResponse, reviewsResponse] = await Promise.all([
-        axios.get(`https://api.trustpilot.com/v1/business-units/${businessId}`, {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-        }),
-        axios.get(`https://api.trustpilot.com/v1/business-units/${businessId}/reviews`, {
-          params: {
-            page,
-            perPage: 10,
-            stars: '1,2,3,4,5',
-          },
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-        }),
-      ]);
-
-      return {
-        business: businessResponse.data,
-        reviews: reviewsResponse.data.reviews || [],
-        totalReviews: reviewsResponse.data.totalReviews || 0,
-      };
-    } catch (error) {
-      console.error('Error fetching Trustpilot business reviews:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Get reviews for specific prop firms
-   */
-  async getPropFirmReviews(firmName: string): Promise<TrustpilotResponse | null> {
-    try {
-      // Search for the business first
-      const businesses = await this.searchBusinesses(firmName);
-
-      if (businesses.length === 0) {
-        console.log(`No Trustpilot business found for: ${firmName}`);
-        return null;
-      }
-
-      // Get the first (most relevant) result
-      const business = businesses[0];
-      return await this.getBusinessReviews(business.id);
-    } catch (error) {
-      console.error(`Error fetching reviews for ${firmName}:`, error);
-      return null;
-    }
-  }
-
-  /**
-   * Get multiple prop firm reviews
-   */
-  async getMultiplePropFirmReviews(
+  static async getMultiplePropFirmReviews(
     firmNames: string[]
-  ): Promise<Record<string, TrustpilotResponse | null>> {
-    try {
-      const results: Record<string, TrustpilotResponse | null> = {};
+  ): Promise<Record<string, TrustpilotResponse>> {
+    const results: Record<string, TrustpilotResponse> = {};
 
-      // Fetch reviews for each firm in parallel
-      const promises = firmNames.map(async (firmName) => {
-        const reviews = await this.getPropFirmReviews(firmName);
-        return { firmName, reviews };
-      });
+    for (const firmName of firmNames) {
+      try {
+        // Search for the business first
+        const businesses = await this.searchBusinesses(firmName);
 
-      const responses = await Promise.all(promises);
-
-      responses.forEach(({ firmName, reviews }) => {
-        results[firmName] = reviews;
-      });
-
-      return results;
-    } catch (error) {
-      console.error('Error fetching multiple prop firm reviews:', error);
-      return {};
+        if (businesses.length > 0) {
+          const businessId = businesses[0].id;
+          const reviews = await this.getBusinessReviews(businessId, 5);
+          results[firmName] = reviews;
+        } else {
+          results[firmName] = { reviews: [], total: 0, averageRating: 0 };
+        }
+      } catch (error) {
+        console.error(`Error fetching reviews for ${firmName}:`, error);
+        results[firmName] = { reviews: [], total: 0, averageRating: 0 };
+      }
     }
+
+    return results;
   }
 
   /**
-   * Get business rating summary
+   * Transform Trustpilot reviews to testimonial format
    */
-  async getBusinessRating(
-    businessId: string
-  ): Promise<{ rating: number; reviewCount: number } | null> {
-    try {
-      const response = await axios.get(
-        `https://api.trustpilot.com/v1/business-units/${businessId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      return {
-        rating: response.data.rating || 0,
-        reviewCount: response.data.numberOfReviews || 0,
-      };
-    } catch (error) {
-      console.error('Error fetching business rating:', error);
-      return null;
-    }
+  static transformToTestimonials(reviews: TrustpilotReview[], firmName: string) {
+    return reviews.map((review, index) => ({
+      id: `tp-${firmName}-${index}`,
+      name: review.author.name,
+      title: `${firmName} User`,
+      review: review.text,
+      avatar:
+        review.author.avatar ||
+        `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 100)}.jpg`,
+      rating: review.rating,
+      source: 'trustpilot' as const,
+      firmName,
+      createdAt: review.createdAt,
+    }));
   }
 }
-
-export default TrustpilotService.getInstance();

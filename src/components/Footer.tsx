@@ -1,4 +1,9 @@
 import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Mail, Users, TrendingUp, MessageSquare } from 'lucide-react';
 
 const navColumns = [
   {
@@ -8,8 +13,8 @@ const navColumns = [
   {
     title: 'PROP FIRMS',
     links: [
-      { label: 'All Prop Firms', href: '#' },
-      { label: 'Best Sellers', href: '#' },
+      { label: 'All Prop Firms', href: '/firms' },
+      { label: 'Best Sellers', href: '/firms?rating=5' },
     ],
   },
   {
@@ -28,19 +33,13 @@ const navColumns = [
   },
   {
     title: 'GET HELP',
-    links: [
-      { label: 'Contact Us', href: '#' },
-      { label: 'How it Works', href: '#' },
-    ],
+    links: [{ label: 'Contact Us', href: '/#contact' }],
   },
   {
     title: 'COMPANY',
     links: [
-      { label: 'About Us', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Prop Firm Business', href: '#' },
-      { label: 'Press', href: '#' },
-      { label: 'Sitemap', href: '#' },
+      { label: 'About Us', href: '/about' },
+      { label: 'Sitemap', href: '/sitemap' },
     ],
   },
 ];
@@ -59,12 +58,12 @@ const socials = [
     href: '#',
   },
   {
-    label: 'YouTube',
+    label: 'Telegram',
     icon: (
       <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
         <path
           fill="currentColor"
-          d="M23.5 6.2s-.2-1.7-.8-2.4c-.7-.8-1.5-.8-1.9-.9C17.2 2.5 12 2.5 12 2.5h-.1s-5.2 0-8.8.4c-.4 0-1.2.1-1.9.9C.6 4.5.5 6.2.5 6.2S.2 8 .2 9.7v1.6c0 1.7.3 3.5.3 3.5s.2 1.7.8 2.4c.7.8 1.6.8 2 .9 1.5.1 6.7.4 6.7.4s5.2 0 8.8-.4c.4 0 1.2-.1 1.9-.9.6-.7.8-2.4.8-2.4s.3-1.7.3-3.5v-1.6c0-1.7-.3-3.5-.3-3.5ZM9.8 15.3V7.7l6.4 3.8-6.4 3.8Z"
+          d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"
         />
       </svg>
     ),
@@ -86,61 +85,111 @@ const socials = [
 
 const Footer: React.FC = () => {
   return (
-    <footer className="w-full bg-brand-bg text-brand-text pt-12 pb-6 px-4 border-t border-brand-border">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-10">
-        {/* Logo and Brand */}
-        <div className="flex flex-col items-center md:items-start gap-3 min-w-[180px]">
-          <img src="/Logo.png" alt="ReviewMarket Logo" className="w-10 h-10 mb-1" />
-          <span className="font-bold text-lg tracking-wide">ReviewMarket</span>
-        </div>
-        {/* Navigation Columns */}
-        <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-          {navColumns.map((col) => (
-            <div key={col.title}>
-              <div className="text-xs font-semibold text-brand-accent mb-2 uppercase tracking-widest">
-                {col.title}
+    <footer className="w-full bg-background border-t">
+      <div className="container mx-auto px-4 py-12">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8">
+          {/* Logo and Brand */}
+          <div className="lg:col-span-2">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 mb-4 hover:opacity-80 transition-opacity"
+            >
+              <Image src="/Logo.png" alt="ReviewMarket Logo" width={40} height={40} />
+              <span className="font-bold text-xl">ReviewMarket</span>
+            </Link>
+            <p className="text-muted-foreground mb-6 max-w-md">
+              The ultimate platform for comparing prop trading firms. Find your perfect trading
+              partner with real reviews and comprehensive comparisons.
+            </p>
+
+            {/* Newsletter Signup */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm">Stay Updated</h4>
+              <div className="flex space-x-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 px-3 py-2 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <Button size="sm">
+                  <Mail className="h-4 w-4" />
+                </Button>
               </div>
-              <ul className="space-y-1">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-brand-text/80 hover:text-brand-accent transition"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
             </div>
-          ))}
-        </div>
-        {/* Socials */}
-        <div className="flex flex-col items-center md:items-end gap-4 min-w-[120px]">
-          <div className="flex gap-3 mt-2">
-            {socials.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                aria-label={s.label}
-                className="text-brand-text/80 hover:text-brand-accent transition"
-              >
-                {s.icon}
-              </a>
+          </div>
+
+          {/* Navigation Columns */}
+          <div className="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+            {navColumns.map((col) => (
+              <div key={col.title}>
+                <h4 className="font-semibold text-sm mb-4 text-foreground">{col.title}</h4>
+                <ul className="space-y-2">
+                  {col.links.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
+
+          {/* Socials and Stats */}
+          <div className="lg:col-span-1">
+            <h4 className="font-semibold text-sm mb-4 text-foreground">Connect</h4>
+            <div className="flex space-x-3 mb-6">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+
+            {/* Quick Stats */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 text-sm">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">10K+ Traders</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">50+ Firms</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">1K+ Reviews</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      {/* Bottom Row */}
-      <div className="max-w-7xl mx-auto mt-10 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-brand-border pt-6 text-xs text-brand-text/50">
-        <div>&copy; {new Date().getFullYear()} ReviewMarket. All rights reserved.</div>
-        <div className="flex gap-4">
-          <a href="#" className="hover:text-brand-accent">
-            Privacy Policy
-          </a>
-          <a href="#" className="hover:text-brand-accent">
-            Terms & Conditions
-          </a>
+
+        <Separator className="my-8" />
+
+        {/* Bottom Row */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <div>&copy; {new Date().getFullYear()} ReviewMarket. All rights reserved.</div>
+          <div className="flex gap-6">
+            <a href="/privacy" className="hover:text-foreground transition-colors">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="hover:text-foreground transition-colors">
+              Terms & Conditions
+            </a>
+            <a href="/cookies" className="hover:text-foreground transition-colors">
+              Cookie Policy
+            </a>
+          </div>
         </div>
       </div>
     </footer>

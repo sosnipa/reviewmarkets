@@ -1,123 +1,193 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, useInView, easeOut } from 'framer-motion';
+
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import {
+  BarChart3,
+  TrendingUp,
+  Shield,
+  Users,
+  Star,
+  CheckCircle,
+  ArrowRight,
+  Zap,
+  Target,
+  Globe,
+  Clock,
+} from 'lucide-react';
+import Link from 'next/link';
 
 const features = [
   {
-    title: 'Verified Top Firms',
-    desc: 'Only the best, most trusted prop firms make our list.',
+    icon: <TrendingUp className="w-6 h-6" />,
+    title: 'Real-time Comparisons',
+    description:
+      'Compare prop firms side-by-side with live data on fees, features, and performance metrics.',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
   },
   {
-    title: 'Real Traders Reviews',
-    desc: 'Read honest reviews from real traders worldwide.',
+    icon: <Shield className="w-6 h-6" />,
+    title: 'Verified Reviews',
+    description: 'Read authentic reviews from real traders who have used these prop firms.',
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
   },
   {
-    title: 'Monthly Views',
-    desc: 'See which firms are trending and most popular each month.',
+    icon: <Users className="w-6 h-6" />,
+    title: 'Community Driven',
+    description: 'Join thousands of traders sharing insights and experiences.',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    borderColor: 'border-purple-200',
   },
   {
-    title: 'Global Coverage',
-    desc: 'Firms from all over the world, all in one place.',
+    icon: <Star className="w-6 h-6" />,
+    title: 'Expert Analysis',
+    description: 'Get detailed analysis and recommendations from trading experts.',
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
   },
   {
-    title: 'Asset Diversity',
-    desc: 'Compare firms by supported assets: FX, Crypto, Indices, and more.',
+    icon: <Zap className="w-6 h-6" />,
+    title: 'Quick Setup',
+    description: 'Start comparing and applying to prop firms in minutes, not hours.',
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-50',
+    borderColor: 'border-yellow-200',
   },
   {
-    title: 'Platform Variety',
-    desc: 'Find firms supporting MT4, MT5, cTrader, and more.',
-  },
-  {
-    title: 'Exclusive Discounts',
-    desc: 'Get access to special offers and promo codes.',
-  },
-  {
-    title: 'Favorites & Filters',
-    desc: 'Save your favorite firms and filter by what matters to you.',
+    icon: <Target className="w-6 h-6" />,
+    title: 'Personalized Matches',
+    description: 'Find the perfect prop firm based on your trading style and goals.',
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
   },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: easeOut } },
-};
+const stats = [
+  { label: 'Prop Firms', value: '50+', icon: <Globe className="w-5 h-5" /> },
+  { label: 'Active Users', value: '10K+', icon: <Users className="w-5 h-5" /> },
+  { label: 'Success Rate', value: '95%', icon: <CheckCircle className="w-5 h-5" /> },
+  { label: 'Response Time', value: '<24h', icon: <Clock className="w-5 h-5" /> },
+];
 
-const FeaturesSection: React.FC = () => {
-  const [index, setIndex] = useState(0);
-  const maxIndex = features.length - 2;
-
-  const next = useCallback(() => setIndex((i) => (i < maxIndex ? i + 2 : 0)), [maxIndex]);
-  const prev = useCallback(() => setIndex((i) => (i === 0 ? maxIndex : i - 2)), [maxIndex]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      next();
-    }, 12000);
-    return () => clearInterval(interval);
-  }, [index, next]);
-
-  // Ref for in-view animation
-  const sectionRef = React.useRef<HTMLDivElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: '-100px' });
-
+export default function FeaturesSection() {
   return (
-    <section id="features" className="w-full py-16 bg-brand-bg text-brand-text">
-      <div className="max-w-4xl mx-auto flex flex-col items-center">
-        <h2 className="text-3xl font-bold mb-8 text-center text-brand-primary">Why Choose Us?</h2>
-        <div className="relative w-full flex items-center justify-center">
-          <motion.button
-            onClick={prev}
-            whileHover={{ scale: 1.05, boxShadow: '0 0 4px 1px var(--brand-primary)' }}
-            whileTap={{ scale: 0.95 }}
-            className="absolute left-0 z-10 px-3 py-2 bg-brand-card text-brand-primary rounded-full shadow hover:bg-brand-primary/10 transition border border-brand-border"
-            aria-label="Previous"
-          >
-            &#8592;
-          </motion.button>
-          <div className="w-full max-w-2xl overflow-hidden">
-            <AnimatePresence initial={false} mode="wait">
-              <motion.div
-                key={index}
-                initial={{ x: 100, opacity: 0 }}
-                animate={inView ? { x: 0, opacity: 1 } : {}}
-                exit={{ x: -100, opacity: 0 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="flex gap-6 justify-center"
-                ref={sectionRef}
-              >
-                {[features[index], features[index + 1]].map((feature) => (
-                  <motion.div
-                    key={feature.title}
-                    variants={cardVariants}
-                    initial="hidden"
-                    animate={inView ? 'visible' : 'hidden'}
-                    whileHover={{
-                      scale: 1.02,
-                      boxShadow:
-                        '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
-                    }}
-                    className="flex-1 min-w-[220px] max-w-xs bg-brand-card rounded-2xl shadow-lg p-6 text-center border border-brand-border transition"
+    <section className="py-20 bg-background">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <Badge variant="outline" className="mb-4 bg-primary/10 text-primary border-primary/20">
+            Why Choose ReviewMarket
+          </Badge>
+          <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
+            Everything You Need to
+            <span className="block text-primary">Succeed in Prop Trading</span>
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            We&apos;ve partnered with leading prop trading firms to bring you exclusive deals and
+            offers.
+          </p>
+        </motion.div>
+
+        {/* Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
+        >
+          {stats.map((stat, index) => (
+            <Card key={index} className="text-center border-0 shadow-sm bg-muted/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center mb-3 text-primary">
+                  {stat.icon}
+                </div>
+                <div className="text-3xl font-bold text-foreground mb-1">{stat.value}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </motion.div>
+
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+            >
+              <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardHeader className="pb-4">
+                  <div
+                    className={`w-12 h-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-4 ${feature.color}`}
                   >
-                    <h3 className="font-bold text-xl mb-2 text-brand-primary">{feature.title}</h3>
-                    <p className="text-sm text-brand-text/70">{feature.desc}</p>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <motion.button
-            onClick={next}
-            whileHover={{ scale: 1.05, boxShadow: '0 0 4px 1px var(--brand-primary)' }}
-            whileTap={{ scale: 0.95 }}
-            className="absolute right-0 z-10 px-3 py-2 bg-brand-card text-brand-primary rounded-full shadow hover:bg-brand-primary/10 transition border border-brand-border"
-            aria-label="Next"
-          >
-            &#8594;
-          </motion.button>
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="text-xl font-semibold text-foreground">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
+
+        {/* Bottom CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="text-center mt-16"
+        >
+          <Separator className="mb-8" />
+          <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center mb-4">
+                <BarChart3 className="w-8 h-8 text-primary mr-3" />
+                <h3 className="text-2xl font-bold text-foreground">Ready to Start?</h3>
+              </div>
+              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                Join thousands of traders who have already found their perfect prop trading partner.
+                Start comparing firms today and take your trading to the next level.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild className="px-6 py-3 text-base font-semibold">
+                  <Link href="/firms">
+                    Compare Prop Firms
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="px-6 py-3 text-base font-semibold">
+                  <Link href="/testimonials">Read Reviews</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </section>
   );
-};
-
-export default FeaturesSection;
+}

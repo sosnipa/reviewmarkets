@@ -94,7 +94,7 @@ export async function POST(request: Request) {
               
               <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
                 <p>© 2025 ReviewMarket. All rights reserved.</p>
-                <p><a href="#" style="color: #10b981;">Unsubscribe</a> | <a href="#" style="color: #10b981;">Manage Preferences</a></p>
+                <p><a href="${baseUrl}/unsubscribe" style="color: #10b981;">Unsubscribe</a> | <a href="${baseUrl}/preferences" style="color: #10b981;">Manage Preferences</a></p>
               </div>
             </body>
           </html>
@@ -180,7 +180,7 @@ export async function POST(request: Request) {
             
             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
               <p>© 2025 ReviewMarket. All rights reserved.</p>
-              <p><a href="#" style="color: #10b981;">Unsubscribe</a> | <a href="#" style="color: #10b981;">Manage Preferences</a></p>
+              <p><a href="${baseUrl}/unsubscribe" style="color: #10b981;">Unsubscribe</a> | <a href="${baseUrl}/preferences" style="color: #10b981;">Manage Preferences</a></p>
             </div>
           </body>
         </html>

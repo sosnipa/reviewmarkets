@@ -1,9 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, easeOut } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Star, Globe, Filter, Search, Building2, Eye, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
-interface Firm {
+interface PropFirm {
   id: number;
   name: string;
   logo: string;
@@ -15,214 +28,328 @@ interface Firm {
   platforms: string[];
   maxAllocation: string;
   promo: string;
-  description?: string;
-  website?: string;
+  description: string;
+  website: string;
+  lastUpdated?: string;
 }
 
-interface FirmsResponse {
-  firms: Firm[];
-  total: number;
-  filters: {
-    search?: string;
-    country?: string;
-    asset?: string;
-  };
-}
-
-const rowVariants = {
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } },
-};
-
-const FirmsGridSection: React.FC = () => {
-  const [search, setSearch] = useState('');
-  const [country, setCountry] = useState('');
-  const [asset, setAsset] = useState('');
-  const [firms, setFirms] = useState<Firm[]>([]);
+export default function FirmsGridSection() {
+  const [firms, setFirms] = useState<PropFirm[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [allCountries, setAllCountries] = useState<string[]>([]);
-  const [allAssets, setAllAssets] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState('all');
+  const [selectedCountry, setSelectedCountry] = useState('all');
 
-  // Fetch firms data
   useEffect(() => {
     const fetchFirms = async () => {
       try {
-        setLoading(true);
-        const params = new URLSearchParams();
-        if (search) params.append('search', search);
-        if (country) params.append('country', country);
-        if (asset) params.append('asset', asset);
-
-        const response = await fetch(`/api/firms?${params}`);
-        if (!response.ok) throw new Error('Failed to fetch firms');
-
-        const data: FirmsResponse = await response.json();
-        setFirms(data.firms);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load firms data');
-        console.error('Error fetching firms:', err);
+        const response = await fetch('/api/firms');
+        const data = await response.json();
+        // Handle the API response format - it returns an object with firms property
+        const firmsArray = data.firms || [];
+        setFirms(firmsArray);
+      } catch (error) {
+        console.error('Error fetching firms:', error);
+        setFirms([]); // Set empty array on error
       } finally {
         setLoading(false);
       }
     };
 
     fetchFirms();
-  }, [search, country, asset]);
+  }, []);
 
-  // Extract unique countries and assets from firms data
-  useEffect(() => {
-    const countries = Array.from(new Set(firms.map((f) => f.country)));
-    const assets = Array.from(new Set(firms.flatMap((f) => f.assets)));
-    setAllCountries(countries);
-    setAllAssets(assets);
-  }, [firms]);
+  const filteredFirms = Array.isArray(firms)
+    ? firms.filter((firm) => {
+        // Skip firms with missing essential data
+        if (!firm || !firm.name || !firm.description) {
+          return false;
+        }
+
+        const matchesSearch =
+          firm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          firm.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesAsset =
+          selectedAsset === 'all' || (firm.assets && firm.assets.includes(selectedAsset));
+        const matchesCountry = selectedCountry === 'all' || firm.country === selectedCountry;
+
+        return matchesSearch && matchesAsset && matchesCountry;
+      })
+    : [];
+
+  const renderStars = (rating: number) => {
+    const safeRating = Math.max(0, Math.min(5, rating || 0));
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${i < safeRating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`}
+      />
+    ));
+  };
+
+  const getAssetIcon = (asset: string) => {
+    const icons: { [key: string]: string } = {
+      forex: '💱',
+      stocks: '📈',
+      crypto: '₿',
+      indices: '📊',
+      commodities: '🛢️',
+      futures: '📋',
+    };
+    return icons[asset] || '📈';
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-muted/20">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading prop firms...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section id="firms" className="w-full py-12 bg-brand-bg">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold mb-6 text-center text-brand-primary">
-          Compare Prop Firms
-        </h2>
-        {/* Search and Filter Bar */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between px-2">
-          <input
-            type="text"
-            placeholder="Search by firm name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 rounded border border-brand-border bg-brand-card text-brand-text w-full md:w-1/3"
-          />
-          <select
-            title="Filter by country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="px-4 py-2 rounded border border-brand-border bg-brand-card text-brand-text w-full md:w-1/4"
-          >
-            <option value="">All Countries</option>
-            {allCountries.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <select
-            title="Filter by asset"
-            value={asset}
-            onChange={(e) => setAsset(e.target.value)}
-            className="px-4 py-2 rounded border border-brand-border bg-brand-card text-brand-text w-full md:w-1/4"
-          >
-            <option value="">All Assets</option>
-            {allAssets.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
+    <section className="py-20 bg-muted/20">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <Badge variant="outline" className="mb-4 bg-primary/10 text-primary border-primary/20">
+            Top Prop Trading Firms
+          </Badge>
+          <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
+            Compare the Best
+            <span className="block text-primary">Prop Trading Firms</span>
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Discover and compare the top prop trading firms worldwide. Find the perfect match for
+            your trading style and goals.
+          </p>
+        </motion.div>
+
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="mb-8"
+        >
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-6">
+              <div className="flex flex-col lg:flex-row gap-4 items-center">
+                {/* Search */}
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search firms..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Asset Filter */}
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <Select value={selectedAsset} onValueChange={setSelectedAsset}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="All Assets" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Assets</SelectItem>
+                      <SelectItem value="forex">Forex</SelectItem>
+                      <SelectItem value="stocks">Stocks</SelectItem>
+                      <SelectItem value="crypto">Crypto</SelectItem>
+                      <SelectItem value="indices">Indices</SelectItem>
+                      <SelectItem value="commodities">Commodities</SelectItem>
+                      <SelectItem value="futures">Futures</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Country Filter */}
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-muted-foreground" />
+                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                    <SelectTrigger className="w-[160px]">
+                      <SelectValue placeholder="All Countries" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Countries</SelectItem>
+                      <SelectItem value="United States">United States</SelectItem>
+                      <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                      <SelectItem value="Czech Republic">Czech Republic</SelectItem>
+                      <SelectItem value="Australia">Australia</SelectItem>
+                      <SelectItem value="Canada">Canada</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Results Count */}
+        <div className="mb-6">
+          <p className="text-muted-foreground">
+            Showing <span className="font-semibold text-foreground">{filteredFirms.length}</span> of{' '}
+            {firms.length} firms
+          </p>
         </div>
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
-          </div>
-        ) : error ? (
-          <div className="text-center py-12 text-red-500">{error}</div>
-        ) : (
-          <div className="overflow-x-auto rounded-lg shadow border border-brand-border bg-brand-card">
-            <table className="min-w-full">
-              <thead>
-                <tr className="text-left text-xs uppercase text-brand-accent bg-brand-bg/80">
-                  <th className="p-3">Firm</th>
-                  <th className="p-3">Country</th>
-                  <th className="p-3">Rating</th>
-                  <th className="p-3">Years</th>
-                  <th className="p-3">Assets</th>
-                  <th className="p-3">Platforms</th>
-                  <th className="p-3">Max Allocation</th>
-                  <th className="p-3">Promo</th>
-                  <th className="p-3">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {firms.map((firm: Firm) => (
-                  <motion.tr
-                    key={firm.name}
-                    variants={rowVariants}
-                    initial="initial"
-                    animate="animate"
-                    whileHover={{
-                      scale: 1.01,
-                      boxShadow:
-                        '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
-                      backgroundColor: 'var(--brand-bg)',
-                    }}
-                    transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-                    className="border-b last:border-0 hover:bg-brand-bg/80 transition"
-                  >
-                    <td className="p-3 flex items-center gap-2">
-                      <img src={firm.logo} alt={firm.name} className="w-8 h-8 rounded-full" />
-                      <span className="font-semibold text-brand-primary">{firm.name}</span>
-                    </td>
-                    <td className="p-3">{firm.country}</td>
-                    <td className="p-3">
-                      <span className="font-bold text-brand-primary">{firm.rating}</span>
-                      <span className="ml-1 text-xs text-brand-text/60">
-                        ({firm.reviews} reviews)
-                      </span>
-                    </td>
-                    <td className="p-3">{firm.years}</td>
-                    <td className="p-3">
-                      <div className="flex flex-wrap gap-1">
-                        {firm.assets.map((asset: string) => (
-                          <span
-                            key={asset}
-                            className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
-                          >
-                            {asset}
-                          </span>
-                        ))}
+
+        {/* Firms Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredFirms.map((firm, index) => (
+            <motion.div
+              key={firm.id || `firm-${index}`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+            >
+              <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-primary/20 rounded-lg flex items-center justify-center">
+                        <Building2 className="w-6 h-6 text-primary" />
                       </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex gap-1">
-                        {firm.platforms.map((platform: string) => (
-                          <span
-                            key={platform}
-                            className="px-2 py-0.5 bg-brand-bg/80 rounded text-xs text-brand-text border border-brand-border"
-                          >
-                            {platform}
-                          </span>
-                        ))}
+                      <div>
+                        <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {firm.name}
+                        </CardTitle>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Globe className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">{firm.country}</span>
+                        </div>
                       </div>
-                    </td>
-                    <td className="p-3 font-semibold">{firm.maxAllocation}</td>
-                    <td className="p-3">
-                      <span className="px-2 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded text-xs font-bold shadow">
-                        {firm.promo}
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className="bg-primary/10 text-primary border-primary/20"
+                    >
+                      {firm.years}+ years
+                    </Badge>
+                  </div>
+
+                  {/* Rating */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex">{renderStars(firm.rating)}</div>
+                    <span className="text-sm text-muted-foreground">({firm.reviews} reviews)</span>
+                  </div>
+
+                  {/* Assets */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {firm.assets &&
+                      firm.assets.slice(0, 3).map((asset) => (
+                        <Badge key={asset} variant="secondary" className="text-xs">
+                          {getAssetIcon(asset)} {asset}
+                        </Badge>
+                      ))}
+                    {firm.assets && firm.assets.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{firm.assets.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                    {firm.description}
+                  </p>
+
+                  {/* Key Info */}
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Max Allocation:</span>
+                      <span className="font-semibold text-foreground">{firm.maxAllocation}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Platforms:</span>
+                      <span className="text-sm text-foreground">
+                        {firm.platforms && firm.platforms.slice(0, 2).join(', ')}
                       </span>
-                    </td>
-                    <td className="p-3">
-                      <motion.button
-                        whileHover={{
-                          scale: 1.04,
-                          boxShadow:
-                            '0 0 6px 1px var(--brand-accent), 0 0 12px 3px var(--brand-primary)',
-                        }}
-                        whileTap={{ scale: 0.97 }}
-                        className="px-4 py-1 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full hover:from-brand-primary hover:to-brand-secondary/80 transition text-xs font-semibold shadow"
-                      >
-                        View
-                      </motion.button>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="flex gap-2">
+                    <Button asChild className="flex-1">
+                      <Link href="/firms">
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Details
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="icon">
+                      <Link href="/firms">
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Load More */}
+        {filteredFirms.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <Button asChild size="lg" variant="outline" className="px-8 py-3">
+              <Link href="/firms">
+                Load More Firms
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Empty State */}
+        {filteredFirms.length === 0 && !loading && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center py-12"
+          >
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">No firms found</h3>
+            <p className="text-muted-foreground mb-4">
+              Try adjusting your search criteria or filters.
+            </p>
+            <Button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedAsset('all');
+                setSelectedCountry('all');
+              }}
+            >
+              Clear Filters
+            </Button>
+          </motion.div>
         )}
       </div>
     </section>
   );
-};
-
-export default FirmsGridSection;
+}

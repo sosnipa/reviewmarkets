@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import SymbolSearch from '../widgets/SymbolSearch';
-import TradingViewWidget from '../widgets/TradingViewWidget';
-import TradingViewChart from '../widgets/TradingViewChart';
-import TradingViewNews from '../widgets/TradingViewNews';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { TrendingUp, BarChart3, Activity, Globe } from 'lucide-react';
+import TradingViewWidget from '@/components/widgets/TradingViewWidget';
+import TradingViewNews from '@/components/widgets/TradingViewNews';
 
 // Simple fallback market data
 const fallbackMarketData = {
@@ -39,38 +41,37 @@ const SimpleMarketCard = ({
 }: {
   title: string;
   data: MarketItem[];
-  icon: string;
+  icon: React.ReactNode;
 }) => (
-  <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-    <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4">
+  <Card className="overflow-hidden">
+    <CardHeader className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold">{title}</h3>
-        <span className="text-2xl">{icon}</span>
+        <CardTitle className="text-lg">{title}</CardTitle>
+        <div className="text-2xl">{icon}</div>
       </div>
-    </div>
-    <div className="p-4">
+    </CardHeader>
+    <CardContent className="p-4">
       <div className="space-y-3">
         {data.map((item) => (
           <div
             key={item.symbol}
-            className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0"
+            className="flex justify-between items-center py-2 border-b border-border last:border-b-0"
           >
-            <span className="font-semibold text-gray-900">{item.symbol}</span>
+            <span className="font-semibold text-foreground">{item.symbol}</span>
             <div className="text-right">
-              <div className="font-bold text-gray-900">{item.price}</div>
+              <div className="font-bold text-foreground">{item.price}</div>
               <div className={`text-sm font-medium ${item.color}`}>{item.change}</div>
             </div>
           </div>
         ))}
       </div>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 );
 
 export default function MarketDataSection() {
-  const [selectedSymbol] = useState('NASDAQ:AAPL');
-  const [activeTab, setActiveTab] = useState<'quotes' | 'chart' | 'news'>('quotes');
-  const [useFallback, setUseFallback] = useState(false);
+  const [activeTab, setActiveTab] = React.useState<'quotes' | 'chart' | 'news'>('quotes');
+  const [useFallback, setUseFallback] = React.useState(false);
 
   const TabButton = ({
     id,
@@ -79,23 +80,20 @@ export default function MarketDataSection() {
   }: {
     id: 'quotes' | 'chart' | 'news';
     label: string;
-    icon: string;
+    icon: React.ReactNode;
   }) => (
-    <button
+    <Button
+      variant={activeTab === id ? 'default' : 'outline'}
       onClick={() => setActiveTab(id)}
-      className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-        activeTab === id
-          ? 'bg-green-600 text-white shadow-lg'
-          : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-      }`}
+      className="flex items-center space-x-2"
     >
       <span className="text-lg">{icon}</span>
       <span>{label}</span>
-    </button>
+    </Button>
   );
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 to-gray-100">
+    <section className="py-16 bg-muted/20">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -103,33 +101,34 @@ export default function MarketDataSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Market Data</h2>
-          <p className="text-gray-600 mb-6 text-lg max-w-2xl mx-auto">
+          <Badge variant="outline" className="mb-4 bg-primary/10 text-primary border-primary/20">
+            Live Market Data
+          </Badge>
+          <h2 className="text-4xl font-bold text-foreground mb-4">Market Data</h2>
+          <p className="text-muted-foreground mb-6 text-lg max-w-2xl mx-auto">
             Professional trading tools and market information
           </p>
-
-          <div className="my-8">
-            <SymbolSearch />
-          </div>
         </motion.div>
 
         {/* Tab Navigation */}
         <div className="flex justify-center mb-8">
-          <div className="flex space-x-2 bg-gray-100 p-2 rounded-xl">
-            <TabButton id="quotes" label="Market Quotes" icon="📊" />
-            <TabButton id="chart" label="Trading Chart" icon="📈" />
-            <TabButton id="news" label="Market News" icon="📰" />
+          <div className="flex space-x-2 bg-muted p-2 rounded-xl">
+            <TabButton id="quotes" label="Market Quotes" icon={<BarChart3 className="w-4 h-4" />} />
+            <TabButton id="chart" label="Trading Chart" icon={<TrendingUp className="w-4 h-4" />} />
+            <TabButton id="news" label="Market News" icon={<Activity className="w-4 h-4" />} />
           </div>
         </div>
 
         {/* Fallback Toggle */}
         <div className="flex justify-center mb-4">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setUseFallback(!useFallback)}
-            className="text-sm text-gray-600 hover:text-gray-800 underline"
+            className="text-sm"
           >
             {useFallback ? 'Use TradingView Widgets' : 'Use Simple Display'}
-          </button>
+          </Button>
         </div>
 
         {/* Content Area */}
@@ -144,42 +143,64 @@ export default function MarketDataSection() {
             <>
               {useFallback ? (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <SimpleMarketCard title="Indices" data={fallbackMarketData.indices} icon="📈" />
-                  <SimpleMarketCard title="Forex" data={fallbackMarketData.forex} icon="💱" />
-                  <SimpleMarketCard title="Crypto" data={fallbackMarketData.crypto} icon="₿" />
+                  <SimpleMarketCard
+                    title="Indices"
+                    data={fallbackMarketData.indices}
+                    icon={<TrendingUp className="w-6 h-6" />}
+                  />
+                  <SimpleMarketCard
+                    title="Forex"
+                    data={fallbackMarketData.forex}
+                    icon={<Globe className="w-6 h-6" />}
+                  />
+                  <SimpleMarketCard
+                    title="Crypto"
+                    data={fallbackMarketData.crypto}
+                    icon={<Activity className="w-6 h-6" />}
+                  />
                 </div>
               ) : (
-                <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                  <div className="p-6 border-b border-gray-200">
-                    <h3 className="text-xl font-bold text-gray-900">Market Quotes</h3>
-                    <p className="text-gray-600 mt-1">
+                <Card className="overflow-hidden">
+                  <CardHeader className="border-b">
+                    <CardTitle className="text-xl">Market Quotes</CardTitle>
+                    <p className="text-muted-foreground">
                       Prices for indices, forex, futures, and bonds
                     </p>
-                  </div>
-                  <TradingViewWidget />
-                </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <TradingViewWidget />
+                  </CardContent>
+                </Card>
               )}
             </>
           )}
 
           {activeTab === 'chart' && (
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-              <TradingViewChart symbol={selectedSymbol} height={500} />
-            </div>
+            <Card className="overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                  Live Chart
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <TradingViewWidget />
+              </CardContent>
+            </Card>
           )}
 
           {activeTab === 'news' && (
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="p-6 border-b border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900">Market News</h3>
-                <p className="text-gray-600 mt-1">Financial news and market updates</p>
-              </div>
-              <TradingViewNews height={500} />
-            </div>
+            <Card className="overflow-hidden">
+              <CardHeader className="border-b">
+                <CardTitle className="text-xl">Market News</CardTitle>
+                <p className="text-muted-foreground">Financial news and market updates</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <TradingViewNews height={500} />
+              </CardContent>
+            </Card>
           )}
         </motion.div>
-
-        {/* Removed disclaimer section */}
       </div>
     </section>
   );

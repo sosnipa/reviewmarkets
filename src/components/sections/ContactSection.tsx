@@ -1,7 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Instagram, Twitter, Send, MessageCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Instagram,
+  Twitter,
+  Send,
+  MessageCircle,
+  Building2,
+  Clock,
+} from 'lucide-react';
 
 const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -50,114 +66,221 @@ const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="w-full py-16 bg-brand-bg text-brand-text">
-      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-start">
-        {/* Contact Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-brand-card rounded-2xl shadow-lg p-8 flex flex-col gap-4 border border-brand-border"
+    <section id="contact" className="w-full py-20 bg-background">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
         >
-          <h2 className="text-2xl font-bold mb-2 text-brand-primary">Contact Us</h2>
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="px-4 py-2 rounded-full border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
-            required
-            disabled={status === 'loading'}
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="px-4 py-2 rounded-full border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
-            required
-            disabled={status === 'loading'}
-          />
-          <textarea
-            name="message"
-            placeholder="Your Message"
-            rows={5}
-            value={formData.message}
-            onChange={handleChange}
-            className="px-4 py-2 rounded-2xl border border-brand-border bg-brand-bg text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
-            required
-            disabled={status === 'loading'}
-          />
-          {message && (
-            <div className={`text-sm ${status === 'success' ? 'text-green-500' : 'text-red-500'}`}>
-              {message}
-            </div>
-          )}
-          <button
-            type="submit"
-            disabled={status === 'loading'}
-            className="mt-2 px-6 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full font-semibold shadow hover:from-brand-primary hover:to-brand-secondary/80 transition focus:ring-2 focus:ring-brand-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          <Badge variant="outline" className="mb-4 bg-primary/10 text-primary border-primary/20">
+            Get In Touch
+          </Badge>
+          <h2 className="text-4xl font-bold text-foreground mb-4">Contact Us</h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Have questions about prop trading firms? We&apos;re here to help you make informed
+            decisions.
+          </p>
+        </motion.div>
+
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+          {/* Contact Form */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
           >
-            {status === 'loading' ? 'Sending...' : 'Send Message'}
-          </button>
-        </form>
-        {/* Contact Info & Map */}
-        <div className="flex flex-col gap-6">
-          <div className="space-y-2">
-            <h3 className="font-bold text-lg mb-1 text-brand-primary">Contact Information</h3>
-            <div className="flex items-center gap-2 text-brand-text/70">
-              <Mail className="h-5 w-5 text-brand-accent" /> support@reviewmarket.org
-            </div>
-            <div className="flex items-center gap-2 text-brand-text/70">
-              <Phone className="h-5 w-5 text-brand-accent" /> +1 (555) 123-4567
-            </div>
-            <div className="flex items-center gap-2 text-brand-text/70">
-              <MapPin className="h-5 w-5 text-brand-accent" /> 123 Market St, New York, NY
-            </div>
-          </div>
-          <div className="flex gap-4 mt-2">
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="text-brand-text/80 hover:text-brand-accent transition"
-            >
-              <Instagram className="h-6 w-6" />
-            </a>
-            <a
-              href="https://telegram.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Telegram"
-              className="text-brand-text/80 hover:text-brand-accent transition"
-            >
-              <Send className="h-6 w-6" />
-            </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Twitter"
-              className="text-brand-text/80 hover:text-brand-accent transition"
-            >
-              <Twitter className="h-6 w-6" />
-            </a>
-            <a
-              href="https://whatsapp.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="WhatsApp"
-              className="text-brand-text/80 hover:text-brand-accent transition"
-            >
-              <MessageCircle className="h-6 w-6" />
-            </a>
-          </div>
-          <div className="mt-6">
-            <div className="w-full h-40 rounded-2xl bg-brand-bg flex items-center justify-center text-brand-text/50 text-sm border border-brand-border">
-              [Map Placeholder]
-            </div>
-          </div>
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">Send us a message</CardTitle>
+                <p className="text-muted-foreground">We&apos;ll get back to you within 24 hours.</p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="text-sm font-medium text-foreground mb-2 block"
+                      >
+                        Name
+                      </label>
+                      <Input
+                        id="name"
+                        type="text"
+                        name="name"
+                        placeholder="Your Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        disabled={status === 'loading'}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="text-sm font-medium text-foreground mb-2 block"
+                      >
+                        Email
+                      </label>
+                      <Input
+                        id="email"
+                        type="email"
+                        name="email"
+                        placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        disabled={status === 'loading'}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="text-sm font-medium text-foreground mb-2 block"
+                    >
+                      Message
+                    </label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      placeholder="Tell us about your inquiry..."
+                      rows={5}
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      disabled={status === 'loading'}
+                    />
+                  </div>
+                  {message && (
+                    <div
+                      className={`text-sm p-3 rounded-md ${
+                        status === 'success'
+                          ? 'bg-green-50 text-green-700 border border-green-200'
+                          : 'bg-red-50 text-red-700 border border-red-200'
+                      }`}
+                    >
+                      {message}
+                    </div>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {status === 'loading' ? 'Sending...' : 'Send Message'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Contact Info & Social */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="space-y-6"
+          >
+            {/* Contact Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  Contact Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <Mail className="h-5 w-5 text-primary" />
+                  <span>support@reviewmarket.org</span>
+                </div>
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <Phone className="h-5 w-5 text-primary" />
+                  <span>+1 (555) 123-4567</span>
+                </div>
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  <span>123 Market St, New York, NY</span>
+                </div>
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <Clock className="h-5 w-5 text-primary" />
+                  <span>Mon-Fri 9AM-6PM EST</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Social Links */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Follow Us</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-4">
+                  <Button variant="outline" size="icon" asChild>
+                    <a
+                      href="https://instagram.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Instagram"
+                    >
+                      <Instagram className="h-4 w-4" />
+                    </a>
+                  </Button>
+                  <Button variant="outline" size="icon" asChild>
+                    <a
+                      href="https://telegram.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Telegram"
+                    >
+                      <Send className="h-4 w-4" />
+                    </a>
+                  </Button>
+                  <Button variant="outline" size="icon" asChild>
+                    <a
+                      href="https://twitter.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Twitter"
+                    >
+                      <Twitter className="h-4 w-4" />
+                    </a>
+                  </Button>
+                  <Button variant="outline" size="icon" asChild>
+                    <a
+                      href="https://whatsapp.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="WhatsApp"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Map Placeholder */}
+            <Card>
+              <CardContent className="p-0">
+                <div className="w-full h-48 bg-muted/50 flex items-center justify-center text-muted-foreground text-sm rounded-md">
+                  <div className="text-center">
+                    <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                    <p>Interactive Map</p>
+                    <p className="text-xs">Coming Soon</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </section>

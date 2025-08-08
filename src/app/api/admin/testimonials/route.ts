@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getAdminFromRequest } from '@/lib/auth';
 
@@ -16,7 +17,7 @@ interface UpdateData {
   isApproved?: boolean;
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
     const admin = await getAdminFromRequest(request);
@@ -75,7 +76,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
     const admin = await getAdminFromRequest(request);
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     // Verify admin authentication
     const admin = await getAdminFromRequest(request);
@@ -133,17 +134,19 @@ export async function PUT(request: Request) {
       );
     }
 
-    let updateData: UpdateData = {};
+    const updateData: UpdateData = (() => {
+      switch (action) {
+        case 'approve':
+          return { isApproved: true };
+        case 'reject':
+          return { isApproved: false };
+        default:
+          return {};
+      }
+    })();
 
-    switch (action) {
-      case 'approve':
-        updateData.isApproved = true;
-        break;
-      case 'reject':
-        updateData.isApproved = false;
-        break;
-      default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
     // Update testimonials
@@ -165,7 +168,7 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
     // Verify admin authentication
     const admin = await getAdminFromRequest(request);

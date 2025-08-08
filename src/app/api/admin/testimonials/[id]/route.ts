@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getAdminFromRequest } from '@/lib/auth';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     // Verify admin authentication
     const admin = await getAdminFromRequest(request);
@@ -10,8 +14,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const testimonial = await prisma.testimonial.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!testimonial) {
@@ -25,7 +30,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     // Verify admin authentication
     const admin = await getAdminFromRequest(request);
@@ -33,6 +41,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await request.json();
     const { name, title, review, rating, avatar, firmName, isApproved } = body;
 
@@ -43,7 +52,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // Update testimonial
     const testimonial = await prisma.testimonial.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         title,
@@ -65,7 +74,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     // Verify admin authentication
     const admin = await getAdminFromRequest(request);
@@ -73,9 +85,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     // Delete testimonial
     await prisma.testimonial.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({

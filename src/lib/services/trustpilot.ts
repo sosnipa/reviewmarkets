@@ -178,6 +178,7 @@ export class TrustpilotService {
         review.author.avatar ||
         `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 100)}.jpg`,
       rating: review.rating,
+      isApproved: true,
       source: 'trustpilot' as const,
       firmName,
       createdAt: review.createdAt,

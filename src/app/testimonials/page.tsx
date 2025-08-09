@@ -32,7 +32,7 @@ export default function TestimonialsPage() {
                 <p className="text-green-600">See what our community has to say</p>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-                <TestimonialsSection preview={true} />
+                <TestimonialsSection />
               </div>
             </div>
           </div>

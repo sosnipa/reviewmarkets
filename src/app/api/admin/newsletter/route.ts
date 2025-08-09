@@ -49,6 +49,9 @@ export async function POST(request: Request) {
       );
     }
 
+    // Define base URL for email links
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://propfirm-next-leo-sosnipas-projects.vercel.app';
+
     // Handle individual email sending
     if (individualEmail) {
       // Verify the email exists in our subscribers
@@ -160,7 +163,8 @@ export async function POST(request: Request) {
         content
       );
     } else {
-      // Use custom email
+      // Use custom email - ensure baseUrl is accessible
+      const emailBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://propfirm-next-leo-sosnipas-projects.vercel.app';
       const html = `
         <!DOCTYPE html>
         <html>
@@ -180,7 +184,7 @@ export async function POST(request: Request) {
             
             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
               <p>© 2025 ReviewMarket. All rights reserved.</p>
-              <p><a href="${baseUrl}/unsubscribe" style="color: #10b981;">Unsubscribe</a> | <a href="${baseUrl}/preferences" style="color: #10b981;">Manage Preferences</a></p>
+              <p><a href="${emailBaseUrl}/unsubscribe" style="color: #10b981;">Unsubscribe</a> | <a href="${emailBaseUrl}/preferences" style="color: #10b981;">Manage Preferences</a></p>
             </div>
           </body>
         </html>

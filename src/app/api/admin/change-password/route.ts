@@ -5,7 +5,7 @@ import { AdminUserService } from '@/lib/admin-users';
 export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
-    const adminUser = getAdminFromRequest(request);
+    const adminUser = await getAdminFromRequest(request);
     if (!adminUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -25,7 +25,6 @@ function TradingViewChart({
       script.onload = () => {
         if (window.TradingView && container.current) {
           new window.TradingView.widget({
-            autosize: true,
             symbol: symbol,
             interval: interval,
             timezone: 'Etc/UTC',
@@ -38,17 +37,6 @@ function TradingViewChart({
             container_id: container.current.id,
             height: height,
             width: '100%',
-            hide_top_toolbar: false,
-            hide_legend: false,
-            save_image: false,
-            backgroundColor: theme === 'dark' ? '#131722' : '#ffffff',
-            gridColor: theme === 'dark' ? '#363c4e' : '#e1e3e6',
-            watermark: {
-              color: theme === 'dark' ? '#363c4e' : '#e1e3e6',
-              fontSize: 12,
-              text: 'ReviewMarket',
-              transparent: true,
-            },
           });
         }
       };

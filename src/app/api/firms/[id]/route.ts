@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const body = await request.json();
-    const firmId = `firm_${params.id}`;
+    const firmId = `firm_${id}`;
 
     // Validate required fields
     if (!body.name || !body.country || !body.maxAllocation) {
@@ -55,9 +60,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const firmId = `firm_${params.id}`;
+    const { id } = await params;
+    const firmId = `firm_${id}`;
 
     // Delete firm
     await prisma.propFirm.delete({

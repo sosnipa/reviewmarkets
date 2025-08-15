@@ -15,6 +15,7 @@ import {
   Play,
   Pause,
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface Testimonial {
   id: string;
@@ -137,9 +138,11 @@ export default function TestimonialsSection() {
                   <div className="flex items-center justify-center gap-4 mb-6">
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
                       {testimonials[currentIndex]?.avatar ? (
-                        <img
+                        <Image
                           src={testimonials[currentIndex]?.avatar}
                           alt={testimonials[currentIndex]?.name}
+                          width={48}
+                          height={48}
                           className="w-full h-full object-cover"
                         />
                       ) : (

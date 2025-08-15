@@ -44,7 +44,7 @@ function TradingViewNews({ height = 500 }: TradingViewNewsProps) {
         scriptRef.current = null;
       }
     };
-  }, []);
+  }, [height]);
 
   return (
     <div className="relative">

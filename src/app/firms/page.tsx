@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +36,7 @@ interface PropFirm {
   lastUpdated?: string;
 }
 
-export default function FirmsPage() {
+function FirmsPageContent() {
   const searchParams = useSearchParams();
   const [firms, setFirms] = useState<PropFirm[]>([]);
   const [loading, setLoading] = useState(true);
@@ -407,5 +407,13 @@ export default function FirmsPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function FirmsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <FirmsPageContent />
+    </Suspense>
   );
 }

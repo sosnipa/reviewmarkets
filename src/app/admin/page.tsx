@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 // Comprehensive list of countries
@@ -1368,7 +1369,13 @@ const AdminPanel: React.FC = () => {
                       >
                         <td className="p-3">
                           {firm.logo && (
-                            <img src={firm.logo} alt={firm.name} className="w-8 h-8 rounded-full" />
+                            <Image
+                              src={firm.logo}
+                              alt={firm.name}
+                              width={32}
+                              height={32}
+                              className="rounded-full"
+                            />
                           )}
                         </td>
                         <td className="p-3 font-medium">{firm.name}</td>
@@ -1510,9 +1517,11 @@ const AdminPanel: React.FC = () => {
                     >
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex items-center gap-4">
-                          <img
+                          <Image
                             src={testimonial.avatar}
                             alt={testimonial.name}
+                            width={48}
+                            height={48}
                             className="w-12 h-12 rounded-full object-cover"
                           />
                           <div>

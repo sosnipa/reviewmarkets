@@ -1,8 +1,17 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  serverExternalPackages: ['@prisma/client'],
   images: {
-    domains: ['randomuser.me'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, Mail, Users, Eye } from 'lucide-react';
 
@@ -31,11 +31,7 @@ const AnalyticsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [selectedPeriod]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true);
       const [campaignsRes, subscribersRes] = await Promise.all([
@@ -57,7 +53,11 @@ const AnalyticsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPeriod]);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   const StatCard = ({
     title,
